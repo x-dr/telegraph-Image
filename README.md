@@ -18,10 +18,7 @@
 
 
 ### 自定义cdn加速
-> 默认是使用cloudflare
-
-修改 `asset/js/upload.js#L219` 即可
-https://github.com/x-dr/telegraph-Image/blob/f9b7033c3cb5479d0ab353e0c9e1f0e71c7879ea/asset/js/upload.js#L219
+> 默认是使用cloudflare ,修改 `asset/js/upload.js#L219` 即可
 
 + 如用cachefly加速 
 
