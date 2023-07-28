@@ -17,6 +17,25 @@
 5. 点击`Save and Deploy`部署，然后点`Continue to project`即可看到访问域名
 
 
+### 自定义cdn加速
+> 默认是使用cloudflare
+
+修改 `asset/js/upload.js#L219` 即可
+https://github.com/x-dr/telegraph-Image/blob/f9b7033c3cb5479d0ab353e0c9e1f0e71c7879ea/asset/js/upload.js#L219
+
++ 如用cachefly加速 
+
+cachefly绑定cloudflare pages
+<img src="https://i3.wp.com/telegra.ph/file/c19f7ea17ce2027b13dfa.png" />
+
+修改代码
+
+```diff
+- const PROXYURL = ""  //自定义加速域名 默认是使用cloudflare
++ const PROXYURL = "https://xxxxxxxxxx.cachefly.net"  //自定义加速域名 默认是使用cloudflare
+```
+
+
 
 
 ### 感谢
@@ -24,3 +43,7 @@
 [@cf-pages](https://github.com/cf-pages/Telegraph-Image)
 
 [@likebeta](https://github.com/likebeta/telegraph-image-hosting)
+
+
+
+
