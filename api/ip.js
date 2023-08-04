@@ -3,11 +3,12 @@ export const config = {
 };
 export default async function handler(request) {
   const urlParams = process.env
-  // const urlParams = new URL(request.url)
-
+  const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip")
   return new Response(
     // process.env,
-    JSON.stringify(process.env),
+    JSON.stringify({
+      "ip":clientIP
+    }),
     {
       status: 200,
       headers: {
