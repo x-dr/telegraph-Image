@@ -1,4 +1,4 @@
-const BASE_URL = window.location.origin;
+const BASE_URL = `${window.location.origin}/api`;
 $.fn.fileinput.defaults.language = 'zh';
 let $smfile = $("#file");
 $smfile.fileinput({
