@@ -16,10 +16,12 @@
 
 5. 点击`Save and Deploy`部署，然后点`Continue to project`即可看到访问域名
 
-
-### 利用vercel部署
+---
+### 利用vercel部署(vercel分支)
 
 [![Deploy with Vercel](https://vercel.com/button?utm_source=busiyi&utm_campaign=oss)](https://vercel.com/new/clone?utm_source=busiyi&utm_campaign=oss&repository-url=https://github.com/x-dr/telegraph-Image/tree/vercel)
+
+---
 ### 自定义cdn加速
 > 默认是使用cloudflare ,修改 `asset/js/upload.js#L219` 即可
 
