@@ -3,6 +3,10 @@
 
 ### [Demo](https://img.131213.xyz/)
 
+### 开发计划
+- [ ] 后台管理
+- [ ] 画廊
+- [ ] 鉴黄
 
 ### 利用Cloudflare pages部署
 
