@@ -24,6 +24,8 @@
 
 ### 利用Cloudflare pages部署
 
+> [开启图片管理功能教程](./docs/manage.md)
+
 1. 点击[Use this template](https://github.com/x-dr/telegraph-Image/generate)按钮创建一个新的代码库。
 
 2. 登录到[Cloudflare](https://dash.cloudflare.com/)控制台.
@@ -38,6 +40,8 @@
 
 **[开启图片管理功能教程](./docs/manage.md)**
 
+
+---
 ---
 ### 利用vercel部署(vercel分支)
 
