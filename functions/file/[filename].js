@@ -30,16 +30,16 @@ export async function onRequestGet(context) {
     const formattedDate = formatter.format(timedata);
 
     // if (request.headers.get('Referer') == url.origin + "/admin" ) {
-    if (request.headers.get('Referer') == url.origin + "/admin" || request.headers.get('Referer') == url.origin + "/") {
+    if (request.headers.get('Referer') == url.origin + "/admin" || request.headers.get('Referer') == url.origin + "/list" || request.headers.get('Referer') == url.origin + "/") {
         return res_img
     }
     if (typeof env.IMG == "undefined" || env.IMG == null || env.IMG == "") {
-        return response
+        return res_img
     }
     else {
         try {
             const instdata = await env.IMG.prepare('INSERT INTO tgimglog  (url, referer,ip,time) VALUES ( ?, ?, ?, ?)').bind(url.pathname, Referer, clientIP, formattedDate).run()
-            const ps = env.IMG.prepare(`SELECT json_extract(rating, '$.rating_index') AS rating from imginfo WHERE url='${url.pathname}'`)
+            const ps = env.IMG.prepare(`SELECT rating from imginfo WHERE url='${url.pathname}'`)
             const rating = await ps.first();
             if (rating) {
                 if (rating.rating === 3) {
@@ -49,22 +49,33 @@ export async function onRequestGet(context) {
                     // return  Response.json(rating)
                 }
             } else {
-                const res = await fetch(`https://api.moderatecontent.com/moderate/?key=` + apikey + `&url=https://telegra.ph` + url.pathname + url.search)
-                const rating = await res.json()
-                console.log(`rating_index:${rating.rating_index}`);
-                const instdata = await env.IMG.prepare(
-                    `INSERT INTO imginfo (url, referer,ip,rating,total,time)
-                         VALUES ('${url.pathname}','${Referer}', '${clientIP}','${JSON.stringify(rating)}',1,'${formattedDate}')`).run()
-                if (rating.rating_index === 3) {
-                    // console.log("ss");
-                    return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302)
+
+                if (apikey) {
+                    const res = await fetch(`https://api.moderatecontent.com/moderate/?key=` + apikey + `&url=https://telegra.ph` + url.pathname + url.search)
+                    const rating = await res.json()
+                    // console.log(`rating_index:${rating.rating_index}`);
+                    const instdata = await env.IMG.prepare(
+                        `INSERT INTO imginfo (url, referer,ip,rating,total,time)
+                             VALUES ('${url.pathname}','${Referer}', '${clientIP}','${rating.rating_index}',1,'${formattedDate}')`).run()
+                    if (rating.rating_index === 3) {
+                        // console.log("ss");
+                        return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302)
+                    } else {
+                        return res_img
+                    }
                 } else {
+
+                    // console.log("tt");
                     return res_img
                 }
 
+
+
+
+
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             return res_img
         }
     }

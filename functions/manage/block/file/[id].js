@@ -9,7 +9,7 @@ export async function onRequest(context) {
     data, // arbitrary space for passing data between middlewares
   } = context;
 
-  const setData = await env.IMG.prepare(`UPDATE imginfo SET rating = json_set(rating, '$.rating_index', '3') WHERE url='/file/${params.id}'`).run()
+  const setData = await env.IMG.prepare(`UPDATE imginfo SET rating = 3 WHERE url='/file/${params.id}'`).run()
 
   return Response.json(setData);
 

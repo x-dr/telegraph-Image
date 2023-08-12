@@ -8,9 +8,10 @@ export async function onRequest(context) {
     next, // used for middleware or to fetch assets
     data, // arbitrary space for passing data between middlewares
   } = context;
-
-  const setData = await env.IMG.prepare(`UPDATE imginfo SET rating = 1 WHERE url='/file/${params.id}'`).run()
-
-  return Response.json(setData);
+  
+  const ps = await env.IMG.prepare(`SELECT * FROM tgimglog WHERE url LIKE '%${params.id}%'`)
+  const { results } = await ps.all()
+  // console.log(`SELECT * FROM imginfo WHERE url LIKE '${params.id}'`);
+  return Response.json(results);
 
 }
