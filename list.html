@@ -46,7 +46,7 @@
                         <template v-slot="{ row, column, $index }">
                             <div class="demo-image__preview">
                                 <el-image style="width: 100px; height: 100px" :src="row.url" :zoom-rate="1.2"
-                                    preview-teleported :preview-src-list="urlList" :initial-index="$index" alt="row.url"
+                                    preview-teleported :hide-on-click-modal="true"  :preview-src-list="urlList" :initial-index="$index" alt="row.url"
                                     fit="cover" lazy />
                             </div>
                         </template>
@@ -239,7 +239,7 @@
                     }
                 })
                 .catch(error => {
-                    alert(error);
+                    alert("登录失败,请重试！");
                     console.log('error', error)
                 });
 
@@ -270,7 +270,7 @@
 
                 })
                 .catch(error => {
-                    alert(error);
+                    alert("登录失败,请重试！");
                     console.log('error', error)
                 });
 
@@ -295,7 +295,7 @@
 
                 })
                 .catch(error => {
-                    alert(error);
+                    alert("登录失败,请重试！");
                     console.log('error', error)
                 });
 
