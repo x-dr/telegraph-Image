@@ -1,7 +1,7 @@
 export async function onRequestPost(context) {
     const { request, env } = context;
     const url = new URL(request.url);
-    const apikey = env.ModerateContentApiKey || "a36e1f0f1fd4f3041c006640b546fdc2" 
+    const apikey = env.ModerateContentApiKey 
     const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("clientIP");
     const Referer = request.headers.get('Referer') || "Referer";
     
