@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS imginfo (
     `url` text,
     `referer` text,
 	`ip` varchar(255),
-	`rating` text,
+	`rating` integer,
 	`total` integer,
 	`time` DATE
 );
