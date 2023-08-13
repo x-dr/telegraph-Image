@@ -333,3 +333,20 @@ function showImage(element) {
 document.getElementById("lightbox-overlay").addEventListener("click", function () {
     this.style.display = "none";
 });
+
+
+
+// 发起 AJAX 请求
+$.ajax({
+    url: '/total',
+    method: 'GET',
+    success: function (data) {
+        // console.log(data);
+        // 将返回的数据渲染到指定的 <span> 元素中
+        $('#total').text(data.total);
+    },
+    error: function () {
+        $('#total').text("?");
+        console.error('请求失败');
+    }
+});
