@@ -34,61 +34,57 @@
                             <div style="display: flex; align-items: center;">
                                 <span>记录总数量: {{ recordCount }}</span>
                                 <el-input v-model="search" placeholder="请输入关键字" :class="'custom-input'"></el-input>
-                                <el-button @click="handleSearch" style="margin-left: 10px;"
-                                    type="primary">搜索</el-button>
+                                <el-button @click="handleSearch" style="margin-left: 10px;" type="primary">搜索
+                                </el-button>
+                                <el-select style="margin-left: 10px;" v-model="value" value-key="id"
+                                    placeholder="Select">
+                                    <el-option v-for="item in selectOptions" :key="item.id" :label="item.label"
+                                        :value="item" />
+                                </el-select>
+
+                                <el-button @click="handlePrintValue" style="margin-left: 10px;"
+                                    type="primary">获取前20</el-button>
+
                             </div>
                         </el-card>
                     </el-col>
                 </el-row>
 
                 <el-table :data="tableData" height="100%" style="width: 100%">
-                    <el-table-column fixed label="preview" prop="preview" width="200">
+                    <el-table-column fixed label="preview" prop="preview" v-if="showPreviewColumn" width="300">
                         <template v-slot="{ row, column, $index }">
                             <div class="demo-image__preview">
                                 <el-image style="width: 100px; height: 100px" :src="row.url" :zoom-rate="1.2"
-                                    preview-teleported :hide-on-click-modal="true"  :preview-src-list="urlList" :initial-index="$index" alt="row.url"
-                                    fit="cover" lazy />
+                                    preview-teleported :preview-src-list="urlList" :initial-index="$index"
+                                    :hide-on-click-modal="true" alt="row.url" fit="cover" lazy />
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="name" prop="url" width="200">
+                    <el-table-column label="name" prop="url" v-if="showNameColumn" width="200">
                     </el-table-column>
-                    <el-table-column label="time" prop="time" width="200">
+                    <el-table-column label="time" prop="time" v-if="showTimeColumn" width="200">
                     </el-table-column>
-                    <el-table-column label="referer" prop="referer" width="200">
+                    <el-table-column label="referer" prop="referer" v-if="showRefererColumn" width="200">
                     </el-table-column>
-                    <el-table-column label="ip" prop="ip" width="200">
+                    <el-table-column label="ip" prop="ip" v-if="showIpColumn" width="200">
                     </el-table-column>
-                    <el-table-column label="data" prop="rating">
-                        <template v-slot="{ row, column, $index }">
-                            <el-tooltip class="box-item" effect="dark" :content="row.rating" placement="top-start">
-                                <el-button>{{row.rating}}</el-button>
-                            </el-tooltip>
-                        </template>
+                    <el-table-column label="rating" prop="rating" v-if="showRatingColumn" width="200">
                     </el-table-column>
+                    <el-table-column label="total" prop="count" width="200" v-if="showTotalColumn"></el-table-column>
 
-                    <el-table-column fixed="right" label="Operations">
+                    <el-table-column fixed="right" label="Operations" v-if="showOperationsColumn">
                         <template v-slot="{ row, column, $index }">
                             <el-button size="small" type="primary" @click="handleWhite($index,row.url)">白名单</el-button>
                             <el-button size="small" type="info" @click="handleBlock($index,row.url)">黑名单</el-button>
                             <el-button size="small" type="danger" @click="handleDelete($index,row.url)">删除</el-button>
                         </template>
-
-
-
                     </el-table-column>
                 </el-table>
-
-
-                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                <el-pagination style="margin-top: 10px;" v-if="showCurrentPage" background @size-change="handleSizeChange" @current-change="handleCurrentChange"
                     :current-page="currentPage" :page-size="pageSize" :total="totalItems">
                 </el-pagination>
-
-
             </el-main>
-
         </el-container>
-
     </div>
 </body>
 <script>
@@ -110,9 +106,72 @@
                 pageSize: 10, // 每页显示的数量
                 totalItems: 0, // 总条数
                 search: '',
+                value: '', // 选择的选项值
+                showNameColumn: true,
+                showTimeColumn: true,
+                showRefererColumn: true,
+                showIpColumn: true,
+                showTotalColumn: false,
+                showRatingColumn: true,
+                showPreviewColumn: true,
+                showOperationsColumn: true,
+                showCurrentPage: true,
+                selectOptions: [ // 选项数组
+                    { id: 'ip', label: 'IP' },
+                    // { id: 'url', label: 'Name' },
+                    { id: 'referer', label: 'Referer' }
+                ],
             }
         },
         methods: {
+            handlePrintValue() {
+                console.log(this.value.id);
+                fetch(`/manage/desc/${this.value.id}`, requestOptions)
+                    //判断是否需要登录
+                    .then(response => {
+                        if (response.status == 401) {
+                            alert("请先登录");
+                            window.location.href = "/manage/login";
+                        }
+                        else {
+                            return response;
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log(result);
+                        this.showNameColumn = false;
+                        this.showTimeColumn = false;
+                        this.showRefererColumn = false;
+                        this.showIpColumn = false;
+                        // this.showTotalColumn = false;
+                        this.showRatingColumn = false;
+                        this.showPreviewColumn = false;
+                        this.showOperationsColumn = false;
+                        this.showCurrentPage = false;
+
+                        // if (this.value.id === 'url') {
+                        //     this.showNameColumn = true;
+                        //     this.showTotalColumn = true;
+                        //     this.showPreviewColumn = true;
+                        //     this.showOperationsColumn = true;
+                        // } else 
+                        if (this.value.id === 'ip') {
+                            this.showIpColumn = true;
+                            this.showTotalColumn = true;
+                        } else if (this.value.id === 'referer') {
+                            this.showRefererColumn = true;
+                            this.showTotalColumn = true;
+                        }
+                        this.tableData = result;
+                        // console.log(result);
+
+                    })
+                    .catch(error => {
+                        alert(error);
+                        console.log('error', error)
+                    });
+            },
             handleSizeChange(newPageSize) {
                 this.pageSize = newPageSize;
                 this.totalPages = Math.ceil(this.totalItems / this.pageSize); // 更新总页数
@@ -120,7 +179,14 @@
             },
             handleCurrentChange(newPage) {
                 this.currentPage = newPage;
-
+                this.showNameColumn = true;
+                this.showTimeColumn = true;
+                this.showRefererColumn = true;
+                this.showIpColumn = true;
+                // this.showTotalColumn = true;
+                this.showRatingColumn = true;
+                this.showPreviewColumn = true;
+                this.showCurrentPage = true;
                 fetch(`/manage/list/${newPage}`, requestOptions)
                     //判断是否需要登录
                     .then(response => {
@@ -149,6 +215,7 @@
                     .then(response => response.json())
                     .then(result => {
                         console.log(result);
+                        this.showCurrentPage = false;
                         this.tableData = result;
                     })
                     .catch(error => {
@@ -271,7 +338,7 @@
                 })
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    // console.log(result);
                     this.tableData = result;
                     // console.log(result);
 
@@ -289,7 +356,6 @@
                         window.location.href = "/manage/login";
                     }
                     else {
-                        // console.log(response);
                         return response;
                     }
                 })
