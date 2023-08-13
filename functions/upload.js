@@ -1,23 +1,16 @@
-export async function onRequestPost(context) {  // Contents of context object  
-    const {
-        request, // same as existing Worker API    
-        env, // same as existing Worker API    
-        params, // if filename includes [id] or [[path]]   
-        waitUntil, // same as ctx.waitUntil in existing Worker API    
-        next, // used for middleware or to fetch assets    
-        data, // arbitrary space for passing data between middlewares 
-    } = context;
-    context.request
+export async function onRequestPost(context) {
+    const { request, env } = context;
     const url = new URL(request.url);
-    let apikey = env.ModerateContentApiKey
-    const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("clientIP")
-    const Referer = request.headers.get('Referer') || "Referer"
-    const res_img =await fetch('https://telegra.ph/' + url.pathname + url.search, {
+    const apikey = env.ModerateContentApiKey || "a36e1f0f1fd4f3041c006640b546fdc2" 
+    const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("clientIP");
+    const Referer = request.headers.get('Referer') || "Referer";
+    
+    const res_img = await fetch('https://telegra.ph/' + url.pathname + url.search, {
         method: request.method,
         headers: request.headers,
         body: request.body,
     });
-
+    
     const options = {
         timeZone: 'Asia/Shanghai',
         year: 'numeric',
@@ -28,36 +21,36 @@ export async function onRequestPost(context) {  // Contents of context object
         minute: '2-digit',
         second: '2-digit'
     };
-    const timedata = new Date()
-    const formatter = new Intl.DateTimeFormat('zh-CN', options);
-    const formattedDate = formatter.format(timedata);
+    const timedata = new Date();
+    const formattedDate = new Intl.DateTimeFormat('zh-CN', options).format(timedata);
     
-
-
-    if (typeof env.IMG == "undefined" || env.IMG == null || env.IMG == "") { 
-        // console.log(env.IMG);
+    if (!env.IMG) {
+        return res_img;
     }
-    else {
-        try {
-            const newReq = res_img.clone();
-            const responseData = await newReq.json();
-
-            if (apikey) {
-                const res = await fetch(`https://api.moderatecontent.com/moderate/?key=` + apikey + `&url=https://telegra.ph` + responseData[0].src + url.search)
-                const rating = await res.json()
-                const instdata = await env.IMG.prepare(
-                    `INSERT INTO imginfo (url, referer,ip,rating,total,time)
-                         VALUES ('${responseData[0].src}','${Referer}', '${clientIP}','${rating.rating_index}',1,'${formattedDate}')`).run()
-            } else {
-                const instdata = await env.IMG.prepare(
-                    `INSERT INTO imginfo (url, referer,ip,rating,total,time)
-                         VALUES ('${responseData[0].src}','${Referer}', '${clientIP}',0,1,'${formattedDate}')`).run()
-            }
-
-        } catch (e) {
-            console.log(e)
-        }
+    
+    try {
+        const newReq = res_img.clone();
+        const responseData = await newReq.json();
+        const rating = apikey ? await getRating(apikey, responseData[0].src, url.search) : { rating_index: 0 };
+        await insertImageData(env.IMG, responseData[0].src, Referer, clientIP, rating.rating_index, formattedDate);
+    } catch (e) {
+        console.log(e);
+        await insertImageData(env.IMG, responseData[0].src, Referer, clientIP, 0, formattedDate);
     }
 
     return res_img;
+}
+
+
+
+async function getRating(apikey, src, search) {
+    const res = await fetch(`https://api.moderatecontent.com/moderate/?key=${apikey}&url=https://telegra.ph${src}${search}`);
+    return await res.json();
+}
+
+async function insertImageData(env, src, referer, ip, rating, time) {
+    const instdata = await env.prepare(
+        `INSERT INTO imginfo (url, referer, ip, rating, total, time)
+             VALUES ('${src}', '${referer}', '${ip}', ${rating}, 1, '${time}')`
+    ).run();
 }
