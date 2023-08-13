@@ -20,7 +20,8 @@
 
 4. 支持图片审查API，可根据需要开启，开启后不良图片将自动屏蔽，不再加载
 
-5. 支持后台图片管理，日志管理，可以对上传的图片进行在线预览，添加白名单，黑名单等操作
+5. 支持后台图片管理，日志管理，查看访问前20的Referer、IP、img,可以对上传的图片进行在线预览，添加白名单，黑名单等操作
+
 
 ### 更新日志
 
@@ -38,7 +39,7 @@
 3. 在帐户主页中，选择`pages`> ` Create a project` > `Connect to Git`
 4. 选择你创建的项目存储库，在`Set up builds and deployments`部分中，全部默认即可。
 
-<img src="https://i3.wp.com/telegra.ph/file/beb0385822e24c9a9d459.png" />
+<img src="https://i3.wp.com/telegra.ph/file/beb0385822e24c9a9d459.png"  height="50%" width="50%" />
 
 5. 点击`Save and Deploy`部署，然后点`Continue to project`即可看到访问域名
 
