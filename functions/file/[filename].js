@@ -42,7 +42,7 @@ export async function onRequestGet(context) {
             const ps = env.IMG.prepare(`SELECT rating from imginfo WHERE url='${url.pathname}'`)
             const rating = await ps.first();
             if (rating) {
-                if (rating.rating === 3) {
+                if (rating.rating == 3) {
                     return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302)
                 } else {
                     return res_img
@@ -57,7 +57,7 @@ export async function onRequestGet(context) {
                     const instdata = await env.IMG.prepare(
                         `INSERT INTO imginfo (url, referer,ip,rating,total,time)
                              VALUES ('${url.pathname}','${Referer}', '${clientIP}','${rating.rating_index}',1,'${formattedDate}')`).run()
-                    if (rating.rating_index === 3) {
+                    if (rating.rating_index == 3) {
                         // console.log("ss");
                         return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302)
                     } else {
