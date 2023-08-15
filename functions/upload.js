@@ -39,7 +39,6 @@ export async function onRequestPost(context) {
 
     }
 
-
     return res_img;
 }
 
