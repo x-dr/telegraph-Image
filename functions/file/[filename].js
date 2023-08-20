@@ -4,7 +4,9 @@
 
 async function handleRequest(context) {
     const { request, env, params } = context;
-    let apikey = env.ModerateContentApiKey 
+    const apikey = env.ModerateContentApiKey
+    const ModerateContentUrl = apikey ? `https://api.moderatecontent.com/moderate/?key=${apikey}&` : ""
+    const ratingApi = env.RATINGAPI ? `${env.RATINGAPI}?` : ModerateContentUrl;
     const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("clientIP")
     const Referer = request.headers.get('Referer') || "Referer"
     const url = new URL(request.url);
@@ -32,12 +34,14 @@ async function handleRequest(context) {
 
 
     try {
-
+        // console.log(url.origin);
         if (Referer == url.origin + "/admin" || Referer == url.origin + "/list") {
+            // console.log(Referer);
             return res_img;
         } else if (!env.IMG) {
             return res_img;
         } else {
+            await csh(Referer, url.pathname, clientIP)
             await insertTgImgLog(env.IMG, url.pathname, Referer, clientIP, formattedDate);
             const rating = await getRating(env.IMG, url.pathname);
             // console.log(rating);
@@ -48,12 +52,12 @@ async function handleRequest(context) {
                     return res_img;
                 }
             } else {
-                if (apikey) {
+                if (ratingApi) {
                     // console.log("ra");
-                    const rating = await getModerateContentRating(apikey, url.pathname);
-                    await insertImgInfo(env.IMG, url.pathname, Referer, clientIP, rating.rating_index, 1, formattedDate);
-                    console.log(rating.rating_index);
-                    if (rating.rating_index == 3) {
+                    const rating = await getModerateContentRating(ratingApi, url.pathname);
+                    await insertImgInfo(env.IMG, url.pathname, Referer, clientIP, rating.rating, 1, formattedDate);
+                    // console.log(rating.rating);
+                    if (rating.rating == 3) {
                         return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302);
                     } else {
                         return res_img;
@@ -68,7 +72,9 @@ async function handleRequest(context) {
     } catch (error) {
         // 插入 tgimglog 错误记录
         // console.log("d");
+
         await insertTgImgLog(env.IMG, url.pathname, Referer, clientIP, formattedDate);
+        await insertImgInfo(env.IMG, url.pathname, Referer, clientIP, 5, 1, formattedDate);
         console.log(error);
         return res_img;
         // throw error;
@@ -106,9 +112,9 @@ async function getRating(DB, url) {
 }
 
 // 调用 ModerateContent API 鉴黄
-async function getModerateContentRating(apikey, url) {
+async function getModerateContentRating(ratingApi, url) {
     // console.log("d");
-    const res = await fetch(`https://api.moderatecontent.com/moderate/?key=${apikey}&url=https://telegra.ph${url}`);
+    const res = await fetch(`${ratingApi}url=https://telegra.ph${url}`);
     const rating = await res.json();
     return rating;
 }
