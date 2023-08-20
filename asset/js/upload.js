@@ -350,3 +350,18 @@ $.ajax({
         console.error('请求失败');
     }
 });
+
+// 发起 AJAX 请求
+$.ajax({
+    url: '/ip',
+    method: 'GET',
+    success: function (data) {
+        // console.log(data);
+        // 将返回的数据渲染到指定的 <span> 元素中
+        $('#ipinfo').text(data.ip);
+    },
+    error: function () {
+        $('#ipinfo').text("?");
+        console.error('请求失败');
+    }
+});
