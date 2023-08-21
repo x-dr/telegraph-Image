@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS imginfo (
 |RATINGAPI   | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
 
 
-> `RATINGAPI`的格式 `https://xxx.xxx/rating?`
+> `RATINGAPI`的格式 `https://xxx.xxx/rating`
 
 <img src="./img/fun.png"   height="50%" width="50%"/>
 
