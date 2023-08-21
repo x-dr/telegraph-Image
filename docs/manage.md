@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS imginfo (
 |ModerateContentApiKey   | <审查图像内容的API key>|
 |RATINGAPI   | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
 
+> 优先级 `RATINGAPI` > `ModerateContentApiKey`
 
 > `RATINGAPI`的格式 `https://xxx.xxx/rating`
 
