@@ -34,17 +34,14 @@ async function handleRequest(context) {
 
 
     try {
-        // console.log(url.origin);
         if (Referer == url.origin + "/admin" || Referer == url.origin + "/list") {
-            // console.log(Referer);
             return res_img;
         } else if (!env.IMG) {
             return res_img;
         } else {
-            await csh(Referer, url.pathname, clientIP)
             await insertTgImgLog(env.IMG, url.pathname, Referer, clientIP, formattedDate);
             const rating = await getRating(env.IMG, url.pathname);
-            // console.log(rating);
+
             if (rating) {
                 if (rating.rating == 3) {
                     return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302);
@@ -53,10 +50,8 @@ async function handleRequest(context) {
                 }
             } else {
                 if (ratingApi) {
-                    // console.log("ra");
                     const rating = await getModerateContentRating(ratingApi, url.pathname);
                     await insertImgInfo(env.IMG, url.pathname, Referer, clientIP, rating.rating, 1, formattedDate);
-                    // console.log(rating.rating);
                     if (rating.rating == 3) {
                         return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302);
                     } else {
@@ -70,14 +65,10 @@ async function handleRequest(context) {
             }
         }
     } catch (error) {
-        // 插入 tgimglog 错误记录
-        // console.log("d");
-
         await insertTgImgLog(env.IMG, url.pathname, Referer, clientIP, formattedDate);
-        await insertImgInfo(env.IMG, url.pathname, Referer, clientIP, 5, 1, formattedDate);
         console.log(error);
         return res_img;
-        // throw error;
+
     }
 
 

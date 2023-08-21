@@ -28,19 +28,20 @@ export async function onRequestPost(context) {
     if (!env.IMG) {
         return res_img;
     } else {
-        const newReq = res_img.clone();
-        const responseData = await newReq.json();
+        // const newReq = res_img.clone();
+        const responseData = await res_img.json();
         try {
-            // console.log(ratingApi);
             const rating = ratingApi ? await getRating(ratingApi, responseData[0].src) : { rating: 0 };
             await insertImageData(env.IMG, responseData[0].src, Referer, clientIP, rating.rating, formattedDate);
         } catch (e) {
             console.log(e);
             await insertImageData(env.IMG, responseData[0].src, Referer, clientIP, 5, formattedDate);
         }
+
+        return Response.json(responseData);
     }
 
-    return res_img;
+    
 }
 
 
