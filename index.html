@@ -55,6 +55,8 @@
         <form id="upload_option" enctype="multipart/form-data">
         </form>
         <div id="showurl" style="display: none; margin-top: 5px;">
+
+            <button id="copyAllButton" class="btn btn-primary copyAllButton">一键复制</button>
             <ul class="nav nav-tabs" id="navTab" role="tablist">
 
                 <li class="nav-item" role="presentation">
@@ -65,16 +67,18 @@
 
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="htmlcode-tab" data-bs-toggle="tab" data-bs-target="#htmlcode-panel"
-                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onclick="updateTab('htmlcode')">HTML</button>
+                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false"
+                        onclick="updateTab('htmlcode')">HTML</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="bbcode-tab" data-bs-toggle="tab" data-bs-target="#bbcode-panel"
-                        type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false" onclick="updateTab('bbcode')">BBCode</button>
+                        type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false"
+                        onclick="updateTab('bbcode')">BBCode</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="markdown-tab" data-bs-toggle="tab" data-bs-target="#markdown-panel"
-                        type="button" role="tab" aria-controls="disabled-tab-pane"
-                        aria-selected="false" onclick="updateTab('markdown')">Markdown</button>
+                        type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false"
+                        onclick="updateTab('markdown')">Markdown</button>
                 </li>
             </ul>
             <div id="navTabContent" class="tab-content" style="border:none;">
