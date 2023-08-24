@@ -60,21 +60,21 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="imagedetail-tab" data-bs-toggle="tab"
                         data-bs-target="#imagedetail-panel" type="button" role="tab" aria-controls="home-tab-pane"
-                        aria-selected="true">URL</button>
+                        aria-selected="true" onclick="updateTab('imagedetail')">URL</button>
                 </li>
 
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="htmlcode-tab" data-bs-toggle="tab" data-bs-target="#htmlcode-panel"
-                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">HTML</button>
+                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onclick="updateTab('htmlcode')">HTML</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="bbcode-tab" data-bs-toggle="tab" data-bs-target="#bbcode-panel"
-                        type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">BBCode</button>
+                        type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false" onclick="updateTab('bbcode')">BBCode</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="markdown-tab" data-bs-toggle="tab" data-bs-target="#markdown-panel"
                         type="button" role="tab" aria-controls="disabled-tab-pane"
-                        aria-selected="false">Markdown</button>
+                        aria-selected="false" onclick="updateTab('markdown')">Markdown</button>
                 </li>
             </ul>
             <div id="navTabContent" class="tab-content" style="border:none;">
@@ -133,7 +133,7 @@
             <td>
                 <!-- <div class="dlinput_header">URL</div> -->
                 <div class="dlinput_container">
-                    <input class="form-control" type="text" onclick="this.select();" value="{{code}}">
+                    <input class="cpurl form-control" type="text" onclick="this.select();" value="{{code}}">
                     <div style="margin-top: 5px;"></div>
                     <input class="form-control" type="text" onclick="this.select();" value="{{wp}}">
                     <div style="margin-top: 5px;"></div>
@@ -164,6 +164,8 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <!--Lazyload images with jQuery  -->
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery_lazyload/1.9.7/jquery.lazyload.min.js"></script>
+    <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+
     <script src="./asset/js/upload.js"></script>
 </body>
 

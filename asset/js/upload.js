@@ -356,12 +356,42 @@ $.ajax({
     url: '/ip',
     method: 'GET',
     success: function (data) {
-        // console.log(data);
-        // 将返回的数据渲染到指定的 <span> 元素中
         $('#ipinfo').text(data.ip);
     },
     error: function () {
         $('#ipinfo').text("?");
         console.error('请求失败');
     }
+});
+
+
+
+var currentTab = 'imagedetail';
+
+function updateTab(tab) {
+    currentTab = tab;
+
+}
+
+
+// 初始化 Clipboard.js
+var clipboard = new ClipboardJS('#copyAllButton', {
+    text: function () {
+        var cpurls = Array.from(document.querySelectorAll(`#${currentTab} .cpurl`)).map(function (input) {
+            return input.value;
+        });
+
+        return cpurls.join('\n');
+    }
+});
+
+// 复制成功后的提示
+clipboard.on('success', function (e) {
+    swal('复制成功', '', 'success');
+});
+
+// 复制失败后的提示
+clipboard.on('error', function (e) {
+    console.log(e);
+    swal('复制失败', '', 'error');
 });
