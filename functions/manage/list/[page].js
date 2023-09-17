@@ -8,7 +8,8 @@ export async function onRequest(context) {
       next, // used for middleware or to fetch assets
       data, // arbitrary space for passing data between middlewares
     } = context;
-    const ps = context.env.IMG.prepare(`SELECT * FROM imginfo LIMIT 10 OFFSET (${params.page} - 1) * 10`);
+    const ps = env.IMG.prepare(`SELECT * FROM imginfo ORDER BY id DESC LIMIT 10 OFFSET (${params.page} - 1) * 10`);
+    // const ps = env.IMG.prepare(`SELECT * FROM imginfo LIMIT 10 OFFSET (${params.page} - 1) * 10`);
     const { results } = await ps.all()
     return Response.json(results);
   }
