@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Upload</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://img.131213.xyz/asset/css/notifyme.css" rel="stylesheet">
+    <link href="https://img.131213.xyz/asset/css/style.css" rel="stylesheet">
+    <!-- <link href="/asset/css/notifyme.css" rel="stylesheet">
+    <link href="/asset/css/style.css" rel="stylesheet"> -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVKEXR5XSG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-JVKEXR5XSG');
+    </script>
+    <!-- bootstrap-fileinput CSS -->
+    <link href="https://cdn.staticfile.org/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/css/fileinput.min.css" rel="stylesheet">
+    <link href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link " href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container kv-main">
+        <div class="page-header">
+            <h1>文件上传</h1>&nbsp;每次最多&nbsp;100&nbsp;个文件。
+            你访问本站的IP是：<span class="total" id="ipinfo"></span>&nbsp;
+
+        </div>
+        <form enctype="multipart/form-data">
+            <div class="form-group" style="max-height: 2000px;">
+                <input id="file" type="file" multiple class="file" data-overwrite-initial="false"
+                    data-min-file-count="1" name="file">
+            </div>
+        </form>
+        <form id="upload_option" enctype="multipart/form-data">
+        </form>
+        <div id="showurl" style="display: none; margin-top: 5px;">
+
+            <button id="copyAllButton" class="btn btn-primary copyAllButton">一键复制</button>
+
+            <ul class="nav nav-tabs" id="navTab" role="tablist">
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="imagedetail-tab" data-bs-toggle="tab"
+                        data-bs-target="#imagedetail-panel" type="button" role="tab" aria-controls="home-tab-pane"
+                        aria-selected="true" onclick="updateTab('imagedetail')">URL</button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="htmlcode-tab" data-bs-toggle="tab" data-bs-target="#htmlcode-panel"
+                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false"
+                        onclick="updateTab('htmlcode')">HTML</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bbcode-tab" data-bs-toggle="tab" data-bs-target="#bbcode-panel"
+                        type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false"
+                        onclick="updateTab('bbcode')">BBCode</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="markdown-tab" data-bs-toggle="tab" data-bs-target="#markdown-panel"
+                        type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false"
+                        onclick="updateTab('markdown')">Markdown</button>
+                </li>
+            </ul>
+            <div id="navTabContent" class="tab-content" style="border:none;">
+                <div class="tab-pane fade show active" id="imagedetail-panel" role="tabpanel"
+                    aria-labelledby="imagedetail-tab">
+                    <fieldset>
+                        <table class="table table-bordered">
+                            <tbody id="imagedetail"></tbody>
+                        </table>
+                    </fieldset>
+                </div>
+                <div class="tab-pane fade" id="htmlcode-panel" role="tabpanel" aria-labelledby="htmlcode-tab">
+                    <fieldset>
+                        <table class="table table-bordered">
+                            <tbody id="htmlcode"></tbody>
+                        </table>
+                    </fieldset>
+                </div>
+                <div class="tab-pane fade" id="bbcode-panel" role="tabpanel" aria-labelledby="bbcode-tab">
+                    <fieldset>
+                        <table class="table table-bordered">
+                            <tbody id="bbcode"></tbody>
+                        </table>
+                    </fieldset>
+                </div>
+                <div class="tab-pane fade" id="markdown-panel" role="tabpanel" aria-labelledby="markdown-tab">
+                    <fieldset>
+                        <table class="table table-bordered">
+                            <tbody id="markdown"></tbody>
+                        </table>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer"></div>
+
+    </div>
+
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="text-muted">Copyright Ⓒ 2023 All rights reserved. 请勿上传违反中国法律的图片，违者后果自负。
+                本程序基于Telegraph，开源于GitHub <a href="https://github.com/x-dr/telegraph-Image"
+                    target="_blank">telegraph-Image</a></p>
+        </div>
+    </footer>
+    <div id="lightbox-overlay" class="lightbox-overlay">
+        <img id="lightbox-image" class="lightbox-image" src="">
+    </div>
+    <script id="image-template" type="text/x-handlebars-template">
+        <tr>
+            <td class="image-code-cover">
+                <img class="lazy" onclick="showImage(this)" onload="DrawImage(this, 100, 100)" src="{{url}}">
+            </td>
+            <td>
+                <!-- <div class="dlinput_header">URL</div> -->
+                <div class="dlinput_container">
+                    <div style="margin-top: 5px;"></div>
+                    <input class="cpurl form-control" type="text"  onclick="this.select();" value="{{code}}">
+                    <div style="margin-top: 5px;"></div>
+                     <input class="form-control" type="text" onclick="this.select();" value="{{codewave}}">
+                    <!--<div style="margin-top: 5px;"></div>
+                    <input class="form-control" type="text" onclick="this.select();" value="{{raw}}"> -->
+                </div>
+            </td>
+            <!-- <td style="width:260px;" class="advert"></td> -->
+        </tr>
+    </script>
+    <!-- jQuery -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
+    <!-- Bootstrap 3.x 的增强型 HTML 5 文件输入，具有文件预览、多项选择、ajax 上传和更多功能。 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/js/fileinput.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/js/plugins/buffer.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/js/plugins/filetype.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/js/locales/zh.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/js/plugins/sortable.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-fileinput/5.5.2/js/plugins/piexif.min.js"></script>
+    <!-- DOMPurify is a DOM-only, super-fast, uber-tolerant XSS sanitizer for HTML, MathML and SVG. It's written in JavaScript and works in all modern browsers (Safari, Opera (15+), Internet Explorer (10+), Firefox and Chrome - as well as almost anything else using Blink or WebKit). DOMPurify is written by security people who have vast background in web attacks and XSS. Fear not. -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/dompurify/3.0.2/purify.min.js"></script>
+    <!-- Handlebars 是一个 JavaScript 语义模板库，通过对视图（view）和数据的分离来快速构建 Web 模板。 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <!-- SweetAlert 是一个 JavaScript 插件，能够完美替代 JavaScript 自带的 alert 弹出框 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <!--Lazyload images with jQuery  -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery_lazyload/1.9.7/jquery.lazyload.min.js"></script>
+
+    <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+
+    <script>
+        const BASE_URL = window.location.origin;
+        $.fn.fileinput.defaults.language = 'zh';
+        let $smfile = $("#file");
+        $smfile.fileinput({
+            // theme: 'fas',
+            uploadUrl: BASE_URL + '/upload',
+            // allowedFileExtensions: ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp'],
+            // allowedFileExtensions: ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'mp4', 'mov', 'avi'],
+            overwriteInitial: false,
+            previewFileType: "image",
+            // maxFileSize: '512000',
+            maxFileCount: '100',
+            maxAjaxThreads: 2,
+            showClose: false,
+            autoOrientImage: true,
+            fileActionSettings: {
+                showRemove: true,
+                showUpload: true,
+                showZoom: true,
+                showDrag: true,
+            },
+            browseClass: "btn btn-success",
+            // msgPlaceholder: "选择文件",
+            browseLabel: "选择要上传的文件",
+            browseIcon: "<i class=\"fas fa-images\"></i> ",
+            removeClass: "btn btn-danger",
+            // removeLabel: "清除",
+            uploadClass: "btn btn-info",
+            // uploadLabel: "上传",
+            dropZoneTitle: "拖拽文件到这里<br>或将屏幕截图复制并粘贴到此处<br>支持多文件同时上传…",
+            // showPreview: false
+            // showPreview: false,
+        })
+
+        function hasHtmlTags(string) {
+            var pattern = /<(.*)>/;
+            return pattern.test(string);
+        }
+
+        $smfile.on('fileselect', function (event, numFiles, label) {
+            var files = $('#file').fileinput('getFileStack');
+            // console.log(files);
+            $.each(files, function (index, blob) {
+                if (hasHtmlTags(blob.name)) {
+                    let filename = DOMPurify.sanitize(blob.name);
+                    filename = filename.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const myNewFile = new File([blob], filename, { type: blob.type });
+                    $smfile.fileinput('updateStack', index, myNewFile);
+                }
+            });
+        });
+
+
+
+
+
+        var clip = function (el) {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        };
+
+
+        document.addEventListener('paste', function (event) {
+            var isChrome = false;
+            if (event.clipboardData || event.originalEvent) {
+                var clipboardData = (event.clipboardData || event.originalEvent.clipboardData);
+                if (clipboardData.items) {
+                    // for chrome
+                    var items = clipboardData.items,
+                        len = items.length,
+                        blob = null;
+                    isChrome = true;
+
+                    event.preventDefault();
+
+                    let images = [];
+                    for (var i = 0; i < len; i++) {
+                        if (items[i].type.indexOf("image") !== -1) {
+                            blob = items[i].getAsFile();
+                            images.push(blob);
+                        }
+                    }
+                    if (images.length > 0) {
+                        uploadBlobFile(images);
+                    }
+                    if (blob !== null) {
+                        let reader = new FileReader();
+                        reader.onload = function (event) {
+                            let base64_str = event.target.result;
+                        }
+
+                    }
+                } else {
+                    //for firefox
+                }
+            } else {
+            }
+        });
+
+
+        function uploadBlobFile(images) {
+            let form = $("#file");
+            swal({
+                title: "提醒",
+                text: "是否添加粘贴的图片?",
+                icon: "warning",
+                dangerMode: true,
+                animation: "pop",
+                buttons: {
+                    cancel: {
+                        text: "取消",
+                        visible: true,
+                        closeModal: true,
+                    },
+                    confirm: {
+                        text: "确定",
+                        value: true,
+                        visible: true,
+                        closeModal: true
+                    }
+                }
+            }).then(function (willUpload) {
+                if (willUpload) {
+                    let filesToUpload = [];
+                    let filePromises = [];
+
+                    $.each(images, function (index, blob) {
+                        let promise = new Promise(function (resolve, reject) {
+                            let reader = new FileReader();
+                            reader.onload = function (event) {
+                                let base64_str = event.target.result;
+                                let filename = DOMPurify.sanitize(blob.name);
+                                filename = filename.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                let newFile = new File([blob], filename, { type: blob.type });
+                                filesToUpload.push(newFile);
+                                resolve();
+                            };
+                            reader.onerror = function (error) {
+                                reject(error);
+                            };
+                            reader.readAsDataURL(blob);
+                        });
+                        filePromises.push(promise);
+                    });
+
+                    Promise.all(filePromises).then(function () {
+                        $(form).fileinput('disablePreview');
+                        $(form).fileinput('readFiles', filesToUpload);
+                        $(form).fileinput('upload');
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+                }
+            });
+        }
+
+
+        function DrawImage(ImgD, FitWidth, FitHeight) {
+            var image = new Image();
+            image.src = ImgD.src;
+            if (image.width > 0 && image.height > 0) {
+                if (image.width <= 260 && image.height <= 260) {
+                    return;
+                }
+                if (image.width / image.height >= FitWidth / FitHeight) {
+                    if (image.width > FitWidth) {
+                        ImgD.width = FitWidth;
+                        ImgD.height = (image.height * FitWidth) / image.width;
+                    } else {
+                        ImgD.width = image.width;
+                        ImgD.height = image.height;
+                    }
+                } else {
+                    if (image.height > FitHeight) {
+                        ImgD.height = FitHeight;
+                        ImgD.width = (image.width * FitHeight) / image.height;
+                    } else {
+                        ImgD.width = image.width;
+                        ImgD.height = image.height;
+                    }
+                }
+            }
+        }
+
+        function formatHtml(data) {
+            tpl = $('#image-template').html();
+            template = Handlebars.compile(tpl);
+            return template(data);
+        }
+
+        var uploaded_files = [];
+
+        function render_uploaded() {
+            $('#imagedetail').html("");
+            $('#htmlcode').html("");
+            $('#bbcode').html("");
+            $('#markdown').html("");
+            $("#showurl").hide();
+            if (uploaded_files.length == 0)
+                return;
+            uploaded_files.sort(function (a, b) { return a.index - b.index; });
+            if ($('#showurl').html()) {
+                $("#showurl").show();
+            }
+            uploaded_files.forEach(function (x) {
+                var resp = x.resp;
+                var name = resp.data.url.split('/').pop();
+                var url = resp.data.url
+                var url1 = resp.data.url1
+                $('#imagedetail').append(formatHtml({ url: url, code: url, codewave: url1 }));
+                $('#htmlcode').append(formatHtml({ url: url, code: '<img src="' + url + '" />', codewave: '<img src="' + url1 + '" />' }));
+                $('#bbcode').append(formatHtml({ url: url, code: '[img]' + url + '[/img]', codewave: '[img]' + url1 + '[/img]' }));
+                $('#markdown').append(formatHtml({ url: url, code: '![' + name + '](' + url + ')', codewave: '![' + name + '](' + url1 + ')' }));
+            });
+        }
+
+
+        $smfile.on('fileuploaded', async function (event, data, previewId, index) {
+            var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
+            // console.log(response);
+            if (response.error === undefined) {
+                response = { data: { url: response.url, url1: response.raw } }
+                // console.log(response);
+                uploaded_files.push({ index: index, resp: response });
+                render_uploaded();
+            }
+        });
+
+
+        $smfile.on('fileclear', function (event) {
+            $smfile.fileinput("enablePreview");
+        });
+        $smfile.on('filecleared', function (event) {
+            if ($("#showurl").is(":visible")) {
+                uploaded_files = [];
+                render_uploaded();
+            }
+        });
+
+
+        $.prototype.fileinput.Constructor.prototype["setUploadUrl"] = function (url) {
+            this.uploadUrl = url;
+        };
+
+        $.prototype.fileinput.Constructor.prototype["getUploadUrl"] = function () {
+            return this.uploadUrl;
+        };
+
+        $.prototype.fileinput.Constructor.prototype["disablePreview"] = function () {
+            this.showPreview = false;
+        };
+
+        $.prototype.fileinput.Constructor.prototype["enablePreview"] = function () {
+            this.showPreview = true;
+        };
+
+        $.prototype.fileinput.Constructor.prototype["setFinalUrl"] = function (func) {
+            this.finalUrl = func;
+        };
+
+        $.prototype.fileinput.Constructor.prototype["setBeforeAjaxEnqueue"] = function (func) {
+            this.beforeAjaxEnqueue = func;
+        };
+
+        var upload_baseurl = `${$smfile.fileinput("getUploadUrl")}?ts=${Date.now()}&rand=${Math.random()}`;
+
+        $smfile.on('filelock', function (event, filestack, extraData) {
+            $smfile.fileinput("setUploadUrl", `${upload_baseurl}&batch_size=${Object.keys(filestack).length}`);
+        });
+
+
+        var backend_idx = parseInt(Math.random() * 1000000007) % 20;
+        $smfile.fileinput("setFinalUrl", function (url, fileId) {
+            backend_idx = (backend_idx + 1) % 20;
+            return url.replace("XXXXXX", `${backend_idx}`);
+        });
+
+        $smfile.fileinput("setBeforeAjaxEnqueue", function (settings) {
+            delete settings['fileId'];
+            var file = settings.data.get("file");
+            // var pdata = file.arrayBuffer();
+            var blob = file.slice();
+            var uri = decodeURI(settings.url);
+            var filename = file.name;
+            uri = uri + "&filename=" + filename;
+            /* return pdata.then((data)=>{
+              settings.url = encodeURI(uri);
+              settings.data = data;
+              return Promise.resolve(settings);
+            }, ()=>{
+              return Promise.resolve(settings);
+            });*/
+            settings.url = encodeURI(uri);
+            settings.data = blob;
+            return settings;
+        });
+
+        let div_caption = $(".kv-fileinput-caption");
+        div_caption.attr('onclick', 'clickFile()');
+        function clickFile() {
+            $smfile.click();
+        }
+
+        $smfile.on('filebatchuploadcomplete', function (event, files, extra) {
+            $('img.lazy').lazyload();
+        });
+
+
+        function showImage(element) {
+            var imageUrl = element.getAttribute("src");
+            var lightboxOverlay = document.getElementById("lightbox-overlay");
+            var lightboxImage = document.getElementById("lightbox-image");
+
+            lightboxImage.src = imageUrl;
+            lightboxOverlay.style.display = "block";
+        }
+
+        document.getElementById("lightbox-overlay").addEventListener("click", function () {
+            this.style.display = "none";
+        });
+
+
+        // 发起 AJAX 请求
+        // $.ajax({
+        //     url: '/total',
+        //     method: 'GET',
+        //     success: function (data) {
+        //         // console.log(data);
+        //         // 将返回的数据渲染到指定的 <span> 元素中
+        //         $('#total').text(data.total);
+        //     },
+        //     error: function () {
+        //         $('#total').text("?");
+        //         console.error('请求失败');
+        //     }
+        // });
+
+        // 发起 AJAX 请求
+        $.ajax({
+            url: '/ip',
+            method: 'GET',
+            success: function (data) {
+                // console.log(data);
+                // 将返回的数据渲染到指定的 <span> 元素中
+                $('#ipinfo').text(data.ip);
+            },
+            error: function () {
+                $('#ipinfo').text("?");
+                console.error('请求失败');
+            }
+        });
+
+        var currentTab = 'imagedetail';
+
+        function updateTab(tab) {
+            currentTab = tab;
+
+        }
+
+
+        // 初始化 Clipboard.js
+        var clipboard = new ClipboardJS('#copyAllButton', {
+            text: function () {
+                var cpurls = Array.from(document.querySelectorAll(`#${currentTab} .cpurl`)).map(function (input) {
+                    return input.value;
+                });
+
+                return cpurls.join('\n');
+            }
+        });
+
+        // 复制成功后的提示
+        clipboard.on('success', function (e) {
+            swal('复制成功', '', 'success');
+        });
+
+        // 复制失败后的提示
+        clipboard.on('error', function (e) {
+            console.log(e);
+            swal('复制失败', '', 'error');
+        });
+
+    </script>
+</body>
+
+</html>
