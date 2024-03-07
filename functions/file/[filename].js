@@ -18,7 +18,9 @@ async function handleRequest(context) {
     });
 
     const allowedDomains = ["bbs.micromatrix.org"]
-    console.log("referer",Referer)
+    if(!allowedDomains.includes(refererUrl.hostname)){
+        return Response.redirect("https://img.131213.xyz/asset/image/blocked.png", 302);
+    }
 
     const options = {
         timeZone: 'Asia/Shanghai',
