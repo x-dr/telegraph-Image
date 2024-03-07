@@ -33,7 +33,7 @@ async function handleRequest(context) {
     const formatter = new Intl.DateTimeFormat('zh-CN', options);
     const formattedDate = formatter.format(timedata);
 
-    const allowedDomains = ["bbs.micromatrix.org"]
+    const allowedDomains = ["bbs.micromatrix.org","micromatrix.org","pan.micromatrix.org"]
     try {
         let refererUrl = new URL(Referer)
         if(!allowedDomains.includes(refererUrl.hostname)){
