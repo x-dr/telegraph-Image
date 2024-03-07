@@ -17,6 +17,8 @@ async function handleRequest(context) {
         body: request.body,
     });
 
+    const allowedDomains = ["bbs.micromatrix.org"]
+    console.log("referer",Referer)
 
     const options = {
         timeZone: 'Asia/Shanghai',
