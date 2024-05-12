@@ -41,7 +41,7 @@
 3. 在帐户主页中，选择`pages`> ` Create a project` > `Connect to Git`
 4. 选择你创建的项目存储库，在`Set up builds and deployments`部分中，全部默认即可。
 
-<img src="https://i3.wp.com/telegra.ph/file/beb0385822e24c9a9d459.png"  height="50%" width="50%" />
+<img src="https://img.131213.xyz/file/beb0385822e24c9a9d459.png"  height="50%" width="50%" />
 
 5. 点击`Save and Deploy`部署，然后点`Continue to project`即可看到访问域名
 
@@ -73,7 +73,7 @@
 + 如用cachefly加速 
 
 cachefly绑定cloudflare pages
-<img src="https://i3.wp.com/telegra.ph/file/c19f7ea17ce2027b13dfa.png" />
+<img src="https://img.131213.xyz/file/c19f7ea17ce2027b13dfa.png" />
 
 修改代码
 
