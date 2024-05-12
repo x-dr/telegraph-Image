@@ -6,6 +6,22 @@
 
 body {}
 
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+    width: 5px; /* 设置滚动条宽度 */
+  }
+  
+  /* 滚动条轨道 */
+  ::-webkit-scrollbar-track {
+    background-color: #ffffff; /* 设置滚动条轨道的背景颜色 */
+  }
+  
+  /* 滚动条滑块 */
+  ::-webkit-scrollbar-thumb {
+    background-color: #c2c2c2; /* 设置滚动条滑块的背景颜色 */
+    border-radius: 10px; /* 设置滚动条滑块的圆角 */
+  }
+
 .footer {
     width: 100%;
     background-color: #f5f5f5;
