@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
 
         const name = responseData.filekey;
         const _URL = responseData.url;
-        if(env.IMG){
+        if (env.IMG) {
             await insertImageData(env.IMG, _URL, Referer, clientIP, 7, formattedDate);
         }
         return Response.json({
@@ -63,10 +63,14 @@ export async function onRequestPost(context) {
 
 
 async function insertImageData(env, src, referer, ip, rating, time) {
-    const instdata = await env.prepare(
-        `INSERT INTO imginfo (url, referer, ip, rating, total, time)
+    try {
+        const instdata = await env.prepare(
+            `INSERT INTO imginfo (url, referer, ip, rating, total, time)
              VALUES ('${src}', '${referer}', '${ip}', ${rating}, 1, '${time}')`
-    ).run();
+        ).run();
+    } catch (error) {
+
+    }
 }
 
 

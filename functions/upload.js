@@ -41,7 +41,7 @@ export async function onRequestPost(context) {
         return Response.json(responseData);
     }
 
-    
+
 }
 
 
@@ -51,8 +51,12 @@ async function getRating(ratingApi, src) {
 }
 
 async function insertImageData(env, src, referer, ip, rating, time) {
-    const instdata = await env.prepare(
-        `INSERT INTO imginfo (url, referer, ip, rating, total, time)
+    try {
+        const instdata = await env.prepare(
+            `INSERT INTO imginfo (url, referer, ip, rating, total, time)
              VALUES ('${src}', '${referer}', '${ip}', ${rating}, 1, '${time}')`
-    ).run();
+        ).run()
+    } catch (error) {
+
+    };
 }

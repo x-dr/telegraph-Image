@@ -61,8 +61,12 @@ export async function onRequestPost(context) {
 
 
 async function insertImageData(env, src, referer, ip, rating, time) {
+try {
     const instdata = await env.prepare(
         `INSERT INTO imginfo (url, referer, ip, rating, total, time)
              VALUES ('${src}', '${referer}', '${ip}', ${rating}, 1, '${time}')`
     ).run();
+} catch (error) {
+    
+}
 }
