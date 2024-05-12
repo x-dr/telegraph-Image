@@ -35,7 +35,10 @@ export async function onRequestPost(context) {
             // 修改协议为https
             _URL.protocol = 'https:';
             responseData.data.uploadPath = _URL
-            await insertImageData(env.IMG, _URL, Referer, clientIP, 6, formattedDate);
+            if(env.IMG){
+                await insertImageData(env.IMG, _URL, Referer, clientIP, 6, formattedDate);
+            }
+            
             return Response.json(responseData, {
                 headers: { 'Content-Type': 'application/json' }
             });

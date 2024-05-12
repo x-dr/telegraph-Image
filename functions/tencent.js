@@ -27,7 +27,9 @@ export async function onRequestPost(context) {
 
         const name = responseData.filekey;
         const _URL = responseData.url;
-        await insertImageData(env.IMG, _URL, Referer, clientIP, 7, formattedDate);
+        if(env.IMG){
+            await insertImageData(env.IMG, _URL, Referer, clientIP, 7, formattedDate);
+        }
         return Response.json({
             "success": true,
             "data": {

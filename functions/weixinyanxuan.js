@@ -52,7 +52,6 @@ export async function onRequestPost(context) {
     // 解析请求体
     const formData1 = await request.formData()
 
-    console.log(formData1.get('file'));
     const formData = new FormData();
     formData.append('nonce', nonce);
     formData.append('timestamp', timestamp);
@@ -77,14 +76,13 @@ export async function onRequestPost(context) {
     const timedata = new Date();
     const formattedDate = new Intl.DateTimeFormat('zh-CN', options).format(timedata);
     const responseData = await res_img.json();
-    console.log(responseData);
     try {
-
         if (responseData.code === 200) {
             const _URL = responseData.data;
-            console.log(_URL);
-            await insertImageData(env.IMG, _URL, Referer, clientIP, 5, formattedDate);
-            // await insertImageData(env.IMG, _URL, Referer, clientIP, "weixinyanxuan", formattedDate);
+            if(env.IMG){
+                await insertImageData(env.IMG, _URL, Referer, clientIP, 5, formattedDate);
+            }
+            
             return Response.json({
                 "url": _URL,
             }, {
