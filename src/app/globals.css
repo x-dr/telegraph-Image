@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+} */
+::-webkit-scrollbar {
+  width: 5px; /* 设置滚动条宽度 */
+}
+
+/* 滚动条轨道 */
+::-webkit-scrollbar-track {
+  background-color: #ffffff; /* 设置滚动条轨道的背景颜色 */
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  background-color: #c2c2c2; /* 设置滚动条滑块的背景颜色 */
+  border-radius: 10px; /* 设置滚动条滑块的圆角 */
+}
+
+
+/* 滚动条容器 */
+.overflow-container {
+  overflow-y: auto; /* 显示垂直滚动条 */
+  /* max-height: 200px; */
+}
+
+/* 滚动条样式 */
+.overflow-container::-webkit-scrollbar {
+  width: 10px; /* 设置滚动条宽度 */
+  background-color: #f5f5f5; /* 设置滚动条背景色 */
+}
+
+/* 滚动条轨道 */
+.overflow-container::-webkit-scrollbar-track {
+  background-color: #f5f5f5; /* 设置滚动条轨道背景色 */
+}
+
+/* 滚动条滑块 */
+.overflow-container::-webkit-scrollbar-thumb {
+  background-color: #888; /* 设置滚动条滑块背景色 */
+  border-radius: 4px; /* 设置滑块圆角 */
+}
+
+/* 鼠标悬停在滑块上的样式 */
+.overflow-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* 设置滑块悬停时的背景色 */
+}
