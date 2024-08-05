@@ -1,0 +1,165 @@
+.notify {
+    padding: 10px;
+    color: #fff
+}
+
+.notify[data-position=bottom] {
+    right: 0;
+    left: 0;
+    bottom: 0
+}
+
+.notify[data-position=top] {
+    right: 0;
+    left: 0;
+    top: 0
+}
+
+.notify[data-position=right] {
+    right: 0;
+    bottom: 0;
+    top: 0;
+    max-width: 300px
+}
+
+.notify[data-position=left] {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    max-width: 300px
+}
+
+.notify[data-notify=success] {
+    background: #15cc1f
+}
+
+.notify[data-notify=error] {
+    background: #f32750
+}
+
+.notify[data-notify=default] {
+    background: #cf80ad
+}
+
+.notify .notify-close {
+    cursor: pointer;
+    padding: 2px 35px;
+    font-size: 20px;
+    text-decoration: none;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #6c9be5 !important;
+    transition: .5s all ease
+}
+
+.notify-close {
+    animation: notify-close-c 20s;
+    -moz-animation: notify-close-c 20s;
+    -webkit-animation: notify-close-c 20s;
+    -o-animation: notify-close-c 20s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate
+}
+
+.notify-close:hover {
+    background-color: #d1d1d1
+}
+
+.notify-content a {
+    padding: 0 10px;
+    color: #fff !important;
+    line-height: 40px
+}
+
+.notify-content i {
+    font-size: 23px;
+    transition: .2s all ease
+}
+
+.notify-content i:hover {
+    font-size: 29px
+}
+
+.notify h1 {
+    margin: 5px 0 10px;
+    text-transform: uppercase;
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff
+}
+
+.notify {
+    background-color: #216cd0;
+    animation: notify-bg 20s;
+    -moz-animation: notify-bg 20s;
+    -webkit-animation: notify-bg 20s;
+    -o-animation: notify-bg 20s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate
+}
+
+@keyframes notify-bg {
+    0% {
+        background-color: #216cd0
+    }
+
+    50% {
+        background-color: #765fd7
+    }
+
+    100% {
+        background-color: #e66767
+    }
+}
+
+@keyframes notify-close-c {
+    0% {
+        color: #216cd0
+    }
+
+    50% {
+        color: #765fd7
+    }
+
+    100% {
+        color: #e66767
+    }
+}
+
+.accepr_box {}
+
+.accept_to_chat {
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, .3);
+    background: -webkit-linear-gradient(right, #e06969, #2780e3);
+    background: -o-linear-gradient(right, #e06969, #2780e3);
+    background: -moz-linear-gradient(right, #e06969, #2780e3);
+    color: #fff;
+    text-align: center;
+    position: fixed;
+    bottom: 150px;
+    right: 0;
+    width: 150px;
+    max-width: 90%;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-right: 20px
+}
+
+.fixed-top {
+    position: unset;
+    top: 0;
+    right: 0;
+    left: 0
+}
+
+@media(max-width:768px) {
+    .accept_to_chat {
+        margin-right: 0;
+        position: unset;
+        min-width: 100%;
+        border-radius: 0;
+        font-size: 10px;
+        background-color: #2780e3
+    }
+}

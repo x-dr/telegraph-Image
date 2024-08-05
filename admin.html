@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Import style -->
+    <!-- <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" /> -->
+    <link href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/element-plus/2.3.3/index.min.css" rel="stylesheet">
+    <link href="/asset/css/el.css" rel="stylesheet">
+    <!-- Import Vue 3 -->
+    <!-- <script src="//unpkg.com/vue@3"></script> -->
+    <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/vue/3.2.47/vue.global.min.js"></script>
+    <!-- Import component library -->
+    <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/element-plus/2.3.3/index.full.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <div style="margin: auto;line-height: 60px;font-size: xx-large;position: relative;">
+                    Dashboard
+                    <span style="position: absolute;right: 0px;" v-if="showLogoutButton">
+                        <el-button size="small" type="info" @click="handleLogout()">
+                            退出登录
+                        </el-button>
+                    </span>
+                </div>
+            </el-header>
+            <el-main>
+                <el-row :gutter="12">
+                    <el-col :span="24">
+                        <el-card shadow="always">
+                            <div style="display: flex; align-items: center;">
+                                <span>记录总数量: {{ recordCount }}</span>
+                                <el-input v-model="search" placeholder="请输入关键字" :class="'custom-input'"></el-input>
+                                <el-button @click="handleSearch" style="margin-left: 10px;" type="primary">搜索
+                                </el-button>
+                                <el-select style="margin-left: 10px;" v-model="value" value-key="id"
+                                    placeholder="Select">
+                                    <el-option v-for="item in selectOptions" :key="item.id" :label="item.label"
+                                        :value="item" />
+                                </el-select>
+
+                                <el-button @click="handlePrintValue" style="margin-left: 10px;"
+                                    type="primary">获取前20</el-button>
+
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+
+                <el-table :data="tableData" height="100%" style="width: 100%">
+                    <el-table-column fixed label="preview" prop="preview" v-if="showPreviewColumn" width="300">
+                        <template v-slot="{ row, column, $index }">
+                            <div class="demo-image__preview">
+                                <el-image style="width: 100px; height: 100px" :src="row.url" :zoom-rate="1.2"
+                                    preview-teleported :preview-src-list="urlList" :initial-index="$index"
+                                    :hide-on-click-modal="true" alt="row.url" fit="cover" lazy />
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="name" prop="url" v-if="showNameColumn" width="200">
+                    </el-table-column>
+                    <el-table-column label="time" prop="time" v-if="showTimeColumn" width="200">
+                    </el-table-column>
+                    <el-table-column label="referer" prop="referer" v-if="showRefererColumn" width="200">
+                    </el-table-column>
+                    <el-table-column label="ip" prop="ip" v-if="showIpColumn" width="200">
+                    </el-table-column>
+                    <el-table-column label="rating" prop="rating" v-if="showRatingColumn" width="200">
+                    </el-table-column>
+                    <el-table-column label="total" prop="count" width="200" v-if="showTotalColumn"></el-table-column>
+
+                    <el-table-column fixed="right" label="Operations" v-if="showOperationsColumn">
+                        <template v-slot="{ row, column, $index }">
+                            <el-button size="small" type="primary" @click="handleWhite($index,row.url)">白名单</el-button>
+                            <el-button size="small" type="info" @click="handleBlock($index,row.url)">黑名单</el-button>
+                            <el-button size="small" type="danger" @click="handleDelete($index,row.url)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-pagination style="margin-top: 10px;" v-if="showCurrentPage" background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-size="pageSize" :total="totalItems">
+                </el-pagination>
+            </el-main>
+        </el-container>
+    </div>
+</body>
+<script>
+    const requestOptions = {
+        method: 'GET',
+        redirect: 'follow',
+        //include authorization credientials
+        credentials: 'include'
+    };
+    const app = Vue.createApp({
+        data() {
+            return {
+                recordCount: 0,
+                WhiteList: 0,
+                BlackList: 0,
+                showLogoutButton: false,
+                tableData: [],
+                currentPage: 1, // 当前页码
+                pageSize: 10, // 每页显示的数量
+                totalItems: 0, // 总条数
+                search: '',
+                value: '', // 选择的选项值
+                showNameColumn: true,
+                showTimeColumn: true,
+                showRefererColumn: true,
+                showIpColumn: true,
+                showTotalColumn: false,
+                showRatingColumn: true,
+                showPreviewColumn: true,
+                showOperationsColumn: true,
+                showCurrentPage: true,
+                selectOptions: [ // 选项数组
+                    { id: 'ip', label: 'IP' },
+                    // { id: 'url', label: 'Name' },
+                    { id: 'referer', label: 'Referer' }
+                ],
+            }
+        },
+        methods: {
+            handlePrintValue() {
+                console.log(this.value.id);
+                fetch(`/manage/desc/${this.value.id}`, requestOptions)
+                    //判断是否需要登录
+                    .then(response => {
+                        if (response.status == 401) {
+                            alert("请先登录");
+                            window.location.href = "/manage/login";
+                        }
+                        else {
+                            return response;
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log(result);
+                        this.showNameColumn = false;
+                        this.showTimeColumn = false;
+                        this.showRefererColumn = false;
+                        this.showIpColumn = false;
+                        // this.showTotalColumn = false;
+                        this.showRatingColumn = false;
+                        this.showPreviewColumn = false;
+                        this.showOperationsColumn = false;
+                        this.showCurrentPage = false;
+
+                        // if (this.value.id === 'url') {
+                        //     this.showNameColumn = true;
+                        //     this.showTotalColumn = true;
+                        //     this.showPreviewColumn = true;
+                        //     this.showOperationsColumn = true;
+                        // } else 
+                        if (this.value.id === 'ip') {
+                            this.showIpColumn = true;
+                            this.showTotalColumn = true;
+                        } else if (this.value.id === 'referer') {
+                            this.showRefererColumn = true;
+                            this.showTotalColumn = true;
+                        }
+                        this.tableData = result;
+                        // console.log(result);
+
+                    })
+                    .catch(error => {
+                        alert(error);
+                        console.log('error', error)
+                    });
+            },
+            handleSizeChange(newPageSize) {
+                this.pageSize = newPageSize;
+                this.totalPages = Math.ceil(this.totalItems / this.pageSize); // 更新总页数
+                this.currentPage = 1; // 重置当前页码为1
+            },
+            handleCurrentChange(newPage) {
+                this.currentPage = newPage;
+                this.showNameColumn = true;
+                this.showTimeColumn = true;
+                this.showRefererColumn = true;
+                this.showIpColumn = true;
+                // this.showTotalColumn = true;
+                this.showRatingColumn = true;
+                this.showPreviewColumn = true;
+                this.showCurrentPage = true;
+                fetch(`/manage/list/${newPage}`, requestOptions)
+                    //判断是否需要登录
+                    .then(response => {
+                        if (response.status == 401) {
+                            alert("请先登录");
+                            window.location.href = "/manage/login";
+                        }
+                        else {
+                            return response;
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log(result);
+                        this.tableData = result;
+                        // console.log(result);
+
+                    })
+                    .catch(error => {
+                        alert(error);
+                        console.log('error', error)
+                    });
+            },
+            handleSearch() {
+                fetch(`/manage/search/${encodeURIComponent(this.search)}`, requestOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log(result);
+                        this.showCurrentPage = false;
+                        this.tableData = result;
+                    })
+                    .catch(error => {
+                        alert(error);
+                        console.log('error', error)
+                    });
+            },
+            handleBlock(index, key) {
+                if (confirm("确认加入黑名单吗?")) {
+                    fetch("/manage/block" + key, requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            // console.log(result.results);
+                            if (result.success) {
+                                alert("加入黑名单成功")
+                            } else {
+                                alert("加入黑名单失败")
+                            }
+
+                        })
+                        .catch(error => {
+                            alert(error);
+                            console.log('error', error)
+                        });
+
+                } else {
+                    console.log("No")
+                }
+            },
+            handleDelete(index, key) {
+                if (confirm("确认删除该条记录吗?")) {
+                    fetch("/manage/delete" + key, requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log(result);
+                            if (result.success) {
+                                alert("删除记录成功")
+                                this.tableData.remove(index);
+                            } else {
+                                alert("删除记录失败")
+                            }
+
+
+                        })
+                        .catch(error => {
+                            alert(error);
+                            console.log('error', error)
+                        });
+
+                } else {
+                    console.log("No")
+                }
+            },
+            handleWhite(index, key) {
+                if (confirm("确认加入白名单吗?")) {
+
+                    fetch("/manage/white" + key, requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log(result);
+                            if (result.success) {
+                                alert("加入白名单成功")
+                                // this.tableData.remove(index);
+                            } else {
+                                alert("加入白名单失败")
+                            }
+                        })
+                        .catch(error => {
+                            alert(error);
+                            console.log('error', error)
+                        });
+
+                } else {
+                    console.log("No")
+                }
+
+            },
+            handleLogout() {
+                window.location.href = "/manage/logout";
+            }
+        },
+
+        mounted() {
+
+            fetch("/manage/check", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    // console.log(result.status);
+                    if (result.status === 200) {
+                        this.showLogoutButton = true;
+                    }
+                    else {
+                        alert(result.msg)
+                        window.location.href = "/manage/login";
+                    }
+                })
+                .catch(error => {
+                    alert("登录失败,请重试！");
+                    console.log('error', error)
+                });
+
+            Array.prototype.remove = function (from, to) {
+                var rest = this.slice((to || from) + 1 || this.length);
+                this.length = from < 0 ? this.length + from : from;
+                return this.push.apply(this, rest);
+            };
+
+
+            fetch(`/manage/list/1`, requestOptions)
+                //判断是否需要登录
+                .then(response => {
+                    if (response.status == 401) {
+                        alert("请先登录");
+                        window.location.href = "/manage/login";
+                    }
+                    else {
+                        // console.log(response);
+                        return response;
+                    }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    // console.log(result);
+                    this.tableData = result;
+                    // console.log(result);
+
+                })
+                .catch(error => {
+                    alert("登录失败,请重试！");
+                    console.log('error', error)
+                });
+
+            fetch(`/manage/total`, requestOptions)
+                //判断是否需要登录
+                .then(response => {
+                    if (response.status == 401) {
+                        alert("请先登录");
+                        window.location.href = "/manage/login";
+                    }
+                    else {
+                        return response;
+                    }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result.total);
+                    this.recordCount = result.total
+                    this.totalItems = result.total; // 设置总条数
+                    this.totalPages = Math.ceil(result.total / this.pageSize); // 计算总页数
+
+                })
+                .catch(error => {
+                    alert("登录失败,请重试！");
+                    console.log('error', error)
+                });
+
+        },
+        computed: {
+            urlList() {
+                return this.tableData.map(item => item.url);
+            }
+        }
+    })
+    app.use(ElementPlus);
+    app.mount("#app");
+</script>
+
+</html>

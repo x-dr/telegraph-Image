@@ -1,0 +1,21 @@
+{
+  "name": "telegraph-image",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "devDependencies": {
+    "eslint": "^8.47.0",
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "dev": "wrangler pages dev . --d1=img",
+    "clear": "kill -9 $(pgrep workerd)",
+    "d1": "wrangler d1 execute img --local --file=./tgimglog.sql"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wrangler": "^3.20.0"
+  }
+}
