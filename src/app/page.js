@@ -140,14 +140,14 @@ export default function Home() {
 
           if (response.ok) {
             const result = await response.json();
-            let imageUrl
-            if (selectedOption == "tg") {
-              imageUrl = `${origin}/api${result.url}`;
-            }
+            let imageUrl = result.url
+            // if (selectedOption == "tg") {
+            //   imageUrl = `${origin}/api${result.url}`;
+            // }
 
-            if (selectedOption == "tencent") {
-              imageUrl = result.url;
-            }
+            // if (selectedOption == "tencent") {
+            //   imageUrl = result.url;
+            // }
 
             filesToUpload[i].url = imageUrl;
             uploaded.push(filesToUpload[i]);

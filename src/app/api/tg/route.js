@@ -18,6 +18,10 @@ export async function POST(request) {
   const clientIp = ip ? ip.split(',')[0].trim() : 'IP not found';
   const Referer = request.headers.get('Referer') || "Referer";
 
+  const req_url = new URL(request.url);
+  
+  const customDomain = env.CUSTOM_DOMAIN || req_url.origin;
+
 
   if (request.method === 'OPTIONS') {
     return new Response(null, {
@@ -39,7 +43,7 @@ export async function POST(request) {
 
     const resdata = await res.json()
     let data = {
-      "url": resdata[0].src,
+      "url": `${customDomain}${resdata[0].src}`,
       "code": 200,
       "name": resdata[0].src
     }
@@ -63,7 +67,7 @@ export async function POST(request) {
         return Response.json({
           ...data,
           msg: "2",
-          url:resdata[0].src,
+          // url:resdata[0].src,
           Referer:Referer,
           clientIp:clientIp,
           rating_index:rating_index,
