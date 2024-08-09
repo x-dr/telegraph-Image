@@ -70,7 +70,7 @@
 |BASIC_PASS   | <后台管理页面登录用户密码>|
 |ModerateContentApiKey   | <审查图像内容的API key>|
 |RATINGAPI     | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
-|CUSTOM_DOMAIN   | https://your-custom-domain.com |
+|CUSTOM_DOMAIN   | https://your-custom-domain.com (自定义加速域名) |
 
 
 ### Star History
