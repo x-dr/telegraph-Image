@@ -61,7 +61,16 @@
 
 
 
+> 环境变量
 
+| 变量名称      | 值 |
+| ----------- | ----------- |
+|PROXYALLIMG  | 反向代理所有图片（默认为false）|
+|BASIC_USER   | <后台管理页面登录用户名称>|
+|BASIC_PASS   | <后台管理页面登录用户密码>|
+|ModerateContentApiKey   | <审查图像内容的API key>|
+|RATINGAPI     | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
+|CUSTOM_DOMAIN   | https://your-custom-domain.com |
 
 
 ### Star History
