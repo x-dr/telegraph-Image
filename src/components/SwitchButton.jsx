@@ -3,13 +3,16 @@ import { toast } from 'react-toastify';
 
 const getListdata = async (initName, rating) => {
   try {
-    const res = await fetch(`/api/admin/block/${initName}`, {
+    const res = await fetch(`/api/admin/block`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
       },
-      body: JSON.stringify({ rating }),
+      body: JSON.stringify({
+        "name": initName,
+        "rating": rating
+      }),
     });
     const res_data = await res.json();
     if (res_data.success) {
@@ -26,7 +29,7 @@ const Switcher = ({ initialChecked, initName }) => {
   const [isChecked, setIsChecked] = useState(initialChecked === 3);
   // const isDisabled = initialChecked > 3;
   // console.log(initName);
-  const isDisabled = initName.startsWith('/file');
+  const isDisabled = initName.startsWith('/file') || initName.startsWith('/cfile');
 
   useEffect(() => {
     setIsChecked(initialChecked === 3);
@@ -37,8 +40,7 @@ const Switcher = ({ initialChecked, initName }) => {
     if (!isDisabled) return;
 
     const newRating = isChecked ? 1 : 3;
-    const newName = initName.replace(/^\/file\//, '')
-    await getListdata(newName, newRating);
+    await getListdata(initName, newRating);
     setIsChecked(!isChecked);
   };
 

@@ -35,7 +35,7 @@ export default function Table({ data }) {
     };
 
     const getImgUrl = (url) => {
-        if (url.startsWith("/file/")) {
+        if (url.startsWith("/file/") || url.startsWith("/cfile/")) {
 
             return `${origin}/api${url}`
         } else {

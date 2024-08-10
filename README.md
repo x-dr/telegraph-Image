@@ -71,6 +71,8 @@
 |ModerateContentApiKey   | <审查图像内容的API key>|
 |RATINGAPI     | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
 |CUSTOM_DOMAIN   | https://your-custom-domain.com (自定义加速域名) |
+|TG_BOT_TOKEN   | bot123468:AAxxxGKrn5 (TG Bot token) |
+|TG_CHAT_ID   | -1234567 (频道或群组的id,tg bot要是该频道或群组的管理员) |
 
 
 ### Star History

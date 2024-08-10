@@ -9,16 +9,15 @@ const corsHeaders = {
 };
 
 export const runtime = 'edge';
-export async function POST(request, { params }) {
-  let { rating } = await request.json()
-  const { name } = params
+export async function POST(request) {
+  let { rating, name } = await request.json()
   // 获取客户端的IP地址
   const { env, cf, ctx } = getRequestContext();
   // console.log(dd);
 
 
   try {
-    const setData = await env.IMG.prepare(`UPDATE imginfo SET rating = ${rating} WHERE url='/file/${name}'`).run()
+    const setData = await env.IMG.prepare(`UPDATE imginfo SET rating = ${rating} WHERE url='${name}'`).run()
     return Response.json({
       "code": 200,
       "success": true,
