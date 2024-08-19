@@ -1,22 +1,25 @@
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Switcher from '@/components/SwitchButton';
 import { ToastContainer, toast } from "react-toastify";
 import React, { useRef } from 'react';
 import TooltipItem from '@/components/Tooltip';
 
-export default function Table({ data }) {
+export default function Table({ data: initialData = [] }) {
+    const [data, setData] = useState(initialData); // 初始化状态
+
     const [selectedImage, setSelectedImage] = useState(null); // 添加状态用于跟踪选中的放大图片
     const [selectedUrl, setSelectedUrl] = useState(null); // 添加状态用于跟踪选中的放大图片
     const [modalData, setModalData] = useState(null); // 添加状态用于跟踪弹窗数据
     const modalRef = useRef(null);
 
+    useEffect(() => {
+        setData(initialData); // 更新数据
+    }, [initialData]);
+
 
     const handleClickOutside = (e) => {
-        // console.log("11");
-        console.log(modalRef.current.contains(e.target));
         if (modalRef.current && !modalRef.current.contains(e.target)) {
-            // console.log("11");
             setModalData(null);
         }
     };
@@ -35,13 +38,11 @@ export default function Table({ data }) {
     };
 
     const getImgUrl = (url) => {
-        if (url.startsWith("/file/") || url.startsWith("/cfile/")) {
+        return url.startsWith("/file/") || url.startsWith("/cfile/") ? `${origin}/api${url}` : url;
+    };
 
-            return `${origin}/api${url}`
-        } else {
-            return url
-        }
-    }
+
+
     const handleNameClick = (item) => {
         setModalData(item);
     };
@@ -58,8 +59,41 @@ export default function Table({ data }) {
         });
     };
 
+
+    const deleteItem = async (initName) => {
+        try {
+            const res = await fetch(`/api/admin/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: initName,
+                }),
+            });
+            const res_data = await res.json();
+            if (res_data.success) {
+                toast.success('删除成功!');
+                setData(prevData => prevData.filter(item => item.url !== initName));
+            } else {
+                toast.error(res_data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
+
+    const handleDelete = async (initName) => {
+        const confirmed = window.confirm('你确定要删除这个项目吗？');
+        if (confirmed) {
+            await deleteItem(initName);
+        }
+    };
+
+
     return (
-        <div className="overflow-auto">
+        <div className="">
             <table className="min-w-full bg-white  items-center justify-between ">
                 <thead >
                     <tr className="sticky top-0 bg-gray-100 z-20">
@@ -73,9 +107,9 @@ export default function Table({ data }) {
                         <th className="sticky  right-0 z-10 py-2 px-4 border-b border-gray-200 bg-gray-100  text-center text-sm font-semibold text-gray-600">限制访问</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody >
                     {data.map((item, index) => (
-                        <tr key={index.id}>
+                        <tr key={index}>
                             <td className="w-20 h-20 sticky left-0 z-10   py-2 px-4 border-b border-gray-500 bg-white text-sm text-gray-700">
                                 <img
                                     src={getImgUrl(item.url)}
@@ -86,7 +120,7 @@ export default function Table({ data }) {
                             </td>
                             <td onClick={() => handleNameClick(item)} className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 truncate max-w-48">
                                 {item.url}
-                                </td>
+                            </td>
                             <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48">
                                 {item.time}
                             </td>
@@ -99,7 +133,17 @@ export default function Table({ data }) {
                             <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.total}</td>
                             <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.rating}</td>
                             <td className="sticky  right-0 z-10 bg-white text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700">
-                                <Switcher initialChecked={item.rating} initName={item.url} />
+                                <div className="flex flex-row">
+                                    <Switcher initialChecked={item.rating} initName={item.url} />
+                                    <button
+                                        onClick={()=>{
+                                            handleDelete(item.url)
+                                        }}
+                                        className="ml-2 px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                                    >
+                                        删除
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     ))}
