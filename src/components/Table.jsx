@@ -133,7 +133,7 @@ export default function Table({ data: initialData = [] }) {
                             <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.total}</td>
                             <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.rating}</td>
                             <td className="sticky  right-0 z-10 bg-white text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700">
-                                <div className="flex flex-row">
+                                <div className="flex flex-row justify-center">
                                     <Switcher initialChecked={item.rating} initName={item.url} />
                                     <button
                                         onClick={()=>{
