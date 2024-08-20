@@ -16,6 +16,7 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState(null); // 添加状态用于跟踪选中的放大图片
   const [activeTab, setActiveTab] = useState('preview');
   const [uploading, setUploading] = useState(false);
+  const [uploadStatusNum, setUploadStatusNum] = useState(0);
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
   const [selectedOption, setSelectedOption] = useState('tg'); // 初始选择第一个选项
@@ -95,7 +96,7 @@ export default function Home() {
 
   const handleClear = () => {
     setSelectedFiles([]);
-    setUploadStatus('');
+    // setUploadStatus('');
     // setUploadedImages([]);
   };
 
@@ -127,11 +128,10 @@ export default function Home() {
       for (let i = 0; i < filesToUpload.length; i++) {
         const file = filesToUpload[i];
         const formData = new FormData();
-
         formData.append(valuename, file);
         const fileName = file.name;
         try {
-          // const response = await fetch(`https://upimg.131213.xyz/upload`, {
+
           const response = await fetch(`/api/${selectedOption}`, {
             method: 'POST',
             body: formData,
@@ -141,19 +141,14 @@ export default function Home() {
           if (response.ok) {
             const result = await response.json();
             let imageUrl = result.url
-            // if (selectedOption == "tg") {
-            //   imageUrl = `${origin}/api${result.url}`;
-            // }
+          // 使用回调函数更新 uploadedImages
+          file.url = imageUrl;
+          setUploadedImages((prevImages) => [...prevImages, file]);
 
-            // if (selectedOption == "tencent") {
-            //   imageUrl = result.url;
-            // }
-
-            filesToUpload[i].url = imageUrl;
-            uploaded.push(filesToUpload[i]);
-            selectedFiles.splice(i, 1);
-            i--;
-            successCount++;
+          // 更新 selectedFiles 数组
+          selectedFiles.splice(i, 1);
+          i--;
+          successCount++;
           } else {
             toast.error(`上传 ${fileName} 图片时出错`);
             uploadFailed = true;
@@ -165,14 +160,11 @@ export default function Home() {
         }
       }
 
-      setUploadedImages(uploaded);
       setUploadedFilesNum(uploadedFilesNum + successCount);
 
       if (uploadFailed) {
         toast.error('部分图片上传失败');
-      } else {
-        toast.success(`已成功上传 ${successCount} 张图片`);
-      }
+      } 
       toast.success(`已成功上传 ${successCount} 张图片`);
       setUploading(false);
     } catch (error) {
@@ -181,6 +173,12 @@ export default function Home() {
       setUploading(false);
     }
   };
+
+  
+      
+
+  
+
 
 
   const handlePaste = (event) => {
@@ -410,7 +408,6 @@ export default function Home() {
                   </button>
                   <button
                     className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer mx-2"
-
                     onClick={() => handleUpload(file)}
                   >
                     <FontAwesomeIcon icon={faUpload} />
@@ -449,7 +446,7 @@ export default function Home() {
           </div>
           <div className="md:col-span-5 col-span-8">
             <div className="w-full h-10 bg-slate-200 leading-10 px-4 text-center md:text-left">
-              已选择 {selectedFiles.length} 张，共 {getTotalSizeInMB(selectedFiles)} M
+              已选择 {selectedFiles.length} 张，共 {getTotalSizeInMB(selectedFiles)} M;
             </div>
           </div>
           <div className="md:col-span-1 col-span-3">
