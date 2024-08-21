@@ -74,7 +74,9 @@
 |RATINGAPI     | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
 |CUSTOM_DOMAIN   | https://your-custom-domain.com (自定义加速域名) |
 |TG_BOT_TOKEN   | bot123468:AAxxxGKrn5 (TG Bot token) |
-|TG_CHAT_ID   | -1234567 (频道或群组的id,tg bot要是该频道或群组的管理员) |
+|TG_CHAT_ID   | -1234567 (频道的ID,TG Bot要是该频道或群组的管理员) |
+
+> 获取频道ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
 
 
 ### Star History

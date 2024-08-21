@@ -89,12 +89,14 @@ export default function Admin() {
   const handleViewToggle = () => {
     setView(view === 'list' ? 'log' : 'list');
     setCurrentPage(1); // 切换视图时重置到第一页
+    setInputPage(1);
   };
 
 
   const handleSearch = (event) => {
     event.preventDefault();
     setCurrentPage(1);
+    setInputPage(1);
     getListdata(1);
   };
 
