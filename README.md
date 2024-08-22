@@ -78,8 +78,7 @@
 
 > TG_BOT_TOKEN
 
-![image.png](https://img.131213.xyz/file/02735b83dbdcf5fe31a45.png)
-
+<a href="https://img.131213.xyz/api/file/02735b83dbdcf5fe31a45.png" target="_blank"><img src="https://img.131213.xyz/api/file/02735b83dbdcf5fe31a45.png" height="50%" width="50%"></a>
 
 > 获取ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
 
