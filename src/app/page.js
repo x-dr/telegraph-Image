@@ -107,74 +107,56 @@ export default function Home() {
 
   const handleUpload = async (file = null) => {
     setUploading(true);
-
+  
     const filesToUpload = file ? [file] : selectedFiles;
-
+  
     if (filesToUpload.length === 0) {
       toast.error('请选择要上传的文件');
       setUploading(false);
       return;
     }
-
+  
+    const formFieldName = selectedOption === "tencent" ? "media" : "file";
+    let successCount = 0;
+  
     try {
-      const uploaded = [...uploadedImages];
-      let uploadFailed = false;
-      let successCount = 0;
-      let valuename = "file"
-      if (selectedOption == "tencent") {
-        valuename = "media"
-      }
-
-      for (let i = 0; i < filesToUpload.length; i++) {
-        const file = filesToUpload[i];
+      for (const file of filesToUpload) {
         const formData = new FormData();
-        formData.append(valuename, file);
-        const fileName = file.name;
+        formData.append(formFieldName, file);
+  
         try {
-
           const response = await fetch(`/api/${selectedOption}`, {
             method: 'POST',
             body: formData,
             headers: headers
           });
-
+  
           if (response.ok) {
             const result = await response.json();
-            let imageUrl = result.url
-          // 使用回调函数更新 uploadedImages
-          file.url = imageUrl;
-          setUploadedImages((prevImages) => [...prevImages, file]);
-
-          // 更新 selectedFiles 数组
-          selectedFiles.splice(i, 1);
-          i--;
-          successCount++;
+            file.url = result.url;
+  
+            // 更新 uploadedImages 和 selectedFiles
+            setUploadedImages((prevImages) => [...prevImages, file]);
+            setSelectedFiles((prevFiles) => prevFiles.filter(f => f !== file));
+            successCount++;
           } else {
-            toast.error(`上传 ${fileName} 图片时出错`);
-            uploadFailed = true;
+            toast.error(`上传 ${file.name} 图片时出错`);
           }
         } catch (error) {
-          // console.error('上传图片时出错:', error);
-          toast.error(`上传 ${fileName} 图片时出错`);
-          uploadFailed = true;
+          toast.error(`上传 ${file.name} 图片时出错`);
         }
       }
-
+  
       setUploadedFilesNum(uploadedFilesNum + successCount);
-
-      if (uploadFailed) {
-        toast.error('部分图片上传失败');
-      } 
       toast.success(`已成功上传 ${successCount} 张图片`);
-      setUploading(false);
+  
     } catch (error) {
       console.error('上传过程中出现错误:', error);
       toast.error('上传错误');
+    } finally {
       setUploading(false);
     }
   };
-
-  
       
 
   

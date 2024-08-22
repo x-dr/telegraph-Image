@@ -78,6 +78,10 @@
 
 > 获取频道ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
 
+> 目标聊天的唯一标识符或目标频道的用户名（eg: @channelusername）
+
+
+
 
 ### Star History
 
