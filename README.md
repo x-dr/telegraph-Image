@@ -76,9 +76,9 @@
 |TG_BOT_TOKEN   | bot123468:AAxxxGKrn5 (TG Bot token) |
 |TG_CHAT_ID   | -1234567 (频道的ID,TG Bot要是该频道或群组的管理员) |
 
-> 获取频道ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
+> 获取ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
 
-> 目标聊天的唯一标识符或目标频道的用户名（eg: @channelusername）
+> `TG_CHAT_ID`为目标对话的唯一标`ID`或目标频道的用户名（eg: @channelusername），当目标对话为个人或私有频道是只能是`ID`,当为公开频道或群组是可以为目标频道的用户名（eg: `@channelusername`）
 
 
 
