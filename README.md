@@ -72,9 +72,14 @@
 |BASIC_PASS   | <后台管理页面登录用户密码>|
 |ModerateContentApiKey   | <审查图像内容的API key>|
 |RATINGAPI     | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
-|CUSTOM_DOMAIN   | https://your-custom-domain.com (自定义加速域名) |
-|TG_BOT_TOKEN   | bot123468:AAxxxGKrn5 (TG Bot token) |
+|CUSTOM_DOMAIN | https://your-custom-domain.com (自定义加速域名) |
+|TG_BOT_TOKEN  | 123468:AAxxxGKrn5 (从 [@BotFather](https://t.me/BotFather)) |
 |TG_CHAT_ID   | -1234567 (频道的ID,TG Bot要是该频道或群组的管理员) |
+
+> TG_BOT_TOKEN
+
+![image.png](https://img.131213.xyz/file/02735b83dbdcf5fe31a45.png)
+
 
 > 获取ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
 
