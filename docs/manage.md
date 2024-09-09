@@ -76,6 +76,3 @@ CREATE TABLE IF NOT EXISTS imginfo (
 ## 返回最新部署完成`telegraph-Image`项目后台点击`重试部署` 使环境变量生效
 <img src="./img/d1end.png"   height="50%" width="50%"/>
 
-#### 访问http(s)://你的域名/admin 即可打开后台管理页面
-
-#### 访问http(s)://你的域名/list 即可打开log管理页面
