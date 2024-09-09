@@ -48,7 +48,18 @@ CREATE TABLE IF NOT EXISTS imginfo (
 |BASIC_USER   | <后台管理页面登录用户名称>|
 |BASIC_PASS   | <后台管理页面登录用户密码>|
 |ModerateContentApiKey   | <审查图像内容的API key>|
-|RATINGAPI   | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
+|RATINGAPI     | <[自建的鉴黄api](https://github.com/x-dr/nsfwjs-api) >|
+|CUSTOM_DOMAIN | https://your-custom-domain.com (自定义加速域名) |
+|TG_BOT_TOKEN  | 123468:AAxxxGKrn5 (从 [@BotFather](https://t.me/BotFather)) |
+|TG_CHAT_ID   | -1234567 (频道的ID,TG Bot要是该频道或群组的管理员) |
+
+> TG_BOT_TOKEN
+
+<a href="https://img.131213.xyz/api/file/02735b83dbdcf5fe31a45.png" target="_blank"><img src="https://img.131213.xyz/api/file/02735b83dbdcf5fe31a45.png" height="50%" width="50%"></a>
+
+> 获取ID机器人 [@VersaToolsBot](https://t.me/VersaToolsBot)
+
+> `TG_CHAT_ID`为目标对话的唯一标`ID`或目标频道的用户名（eg: @channelusername），当目标对话为个人或私有频道是只能是`ID`,当为公开频道或群组是可以为目标频道的用户名（eg: `@channelusername`）
 
 
 > 优先级 `RATINGAPI` > `ModerateContentApiKey`
