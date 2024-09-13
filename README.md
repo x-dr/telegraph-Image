@@ -12,7 +12,7 @@
 [https://aimg.pages.dev/](https://aimg.pages.dev/)
 
 ### 测试
-~~[https://testimg.131213.xyz/](https://testimg.131213.xyz/)~~
+[https://telegraph-image-e49.pages.dev/](https://telegraph-image-e49.pages.dev/)
 
 > 测试账号：admin
 
