@@ -4,10 +4,16 @@
 
 
 ### Demo
-[https://img.131213.xyz](https://img.131213.xyz/)
+
+~~[https://img.131213.xyz](https://img.131213.xyz/)~~  (被ban在申诉中)
+
+新网址：
+
+[https://aimg.pages.dev/](https://aimg.pages.dev/)
 
 ### 测试
-[https://testimg.131213.xyz/](https://testimg.131213.xyz/)
+~~[https://testimg.131213.xyz/](https://testimg.131213.xyz/)~~
+
 > 测试账号：admin
 
 > 测试密码：admin
