@@ -19,7 +19,7 @@ export default function Home() {
   const [uploadStatusNum, setUploadStatusNum] = useState(0);
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
-  const [selectedOption, setSelectedOption] = useState('tgchannel'); // 初始选择第一个选项
+  const [selectedOption, setSelectedOption] = useState('tg'); // 初始选择第一个选项
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
@@ -347,7 +347,7 @@ export default function Home() {
               value={selectedOption} // 将选择框的值绑定到状态中的 selectedOption
               onChange={handleSelectChange} // 当选择框的值发生变化时触发 handleSelectChange 函数
               className="text-lg p-2 border  rounded text-center w-auto sm:w-auto md:w-auto lg:w-auto xl:w-auto  2xl:w-36">
-              {/* <option value="tg">TG</option> */}
+              <option value="tg">TG</option>
               <option value="tgchannel">TG_Channel</option>
               <option value="vviptuangou">vviptuangou</option>
 

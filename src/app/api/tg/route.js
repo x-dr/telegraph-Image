@@ -35,7 +35,8 @@ export async function POST(request) {
   }
 
   try {
-    const res = await fetch(`https://telegra.ph/upload`, {
+    const res = await fetch(`https://telegra.ph/upload?source=bugtracker`, {
+    // const res = await fetch(`https://telegra.ph/upload`, {
       method: request.method,
       headers: request.headers,
       body: request.body,
@@ -43,9 +44,9 @@ export async function POST(request) {
 
     const resdata = await res.json()
     let data = {
-      "url": `${customDomain}${resdata[0].src}`,
+      "url": `${customDomain}${resdata.src}`,
       "code": 200,
-      "name": resdata[0].src
+      "name": resdata.src
     }
 
 
@@ -61,13 +62,12 @@ export async function POST(request) {
       })
     } else {
       try {
-        const rating_index = await getRating(env, resdata[0].src)
+        const rating_index = await getRating(env, resdata.src)
         const nowTime = await get_nowTime()
-        await insertImageData(env.IMG, resdata[0].src, Referer, clientIp, rating_index, nowTime);
+        await insertImageData(env.IMG, resdata.src, Referer, clientIp, rating_index, nowTime);
         return Response.json({
           ...data,
           msg: "2",
-          // url:resdata[0].src,
           Referer:Referer,
           clientIp:clientIp,
           rating_index:rating_index,
@@ -79,7 +79,7 @@ export async function POST(request) {
 
       } catch (error) {
         console.log(error);
-        await insertImageData(env.IMG, resdata[0].src, Referer, clientIp, -1, nowTime);
+        await insertImageData(env.IMG, resdata.src, Referer, clientIp, -1, nowTime);
 
 
         return Response.json({
