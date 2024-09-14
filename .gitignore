@@ -43,3 +43,6 @@ next-env.d.ts
 .wrangler/*
 .wrangler
 .wrangler/
+
+app/deva
+src/app/deva/*

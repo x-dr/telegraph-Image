@@ -8,6 +8,17 @@ import { toast } from "react-toastify";
 import { useEffect } from 'react';
 import Footer from '@/components/Footer'
 import Link from "next/link";
+import { signOut } from "next-auth/react"
+
+
+const LoginButton = ({ onClick, href, children }) => (
+  <button
+    onClick={onClick}
+    className="px-4 py-2 mx-2 w-28 sm:w-28 md:w-20 lg:w-16 xl:w-16 2xl:w-20 bg-blue-500 text-white rounded"
+  >
+    {children}
+  </button>
+);
 
 export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -20,6 +31,8 @@ export default function Home() {
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
   const [selectedOption, setSelectedOption] = useState('tgchannel'); // 初始选择第一个选项
+  const [isAuthapi, setisAuthapi] = useState(false);
+  const [Loginuser, setLoginuser] = useState('');
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
@@ -39,9 +52,41 @@ export default function Home() {
   useEffect(() => {
     ip();
     getTotal();
+    isAuth();
 
 
   }, []);
+
+
+  const isAuth = async () => {
+    try {
+
+      const res = await fetch(`/api/enableauthapi/isauth`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json'
+        }
+
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setisAuthapi(true)
+        setLoginuser(data.role)
+
+      } else {
+        setisAuthapi(false)
+        setSelectedOption("58img")
+      }
+
+
+
+    } catch (error) {
+      console.error('请求出错:', error);
+    }
+  };
+
+
   const ip = async () => {
     try {
 
@@ -107,38 +152,44 @@ export default function Home() {
 
   const handleUpload = async (file = null) => {
     setUploading(true);
-  
+
     const filesToUpload = file ? [file] : selectedFiles;
-  
+
     if (filesToUpload.length === 0) {
       toast.error('请选择要上传的文件');
       setUploading(false);
       return;
     }
-  
+
     const formFieldName = selectedOption === "tencent" ? "media" : "file";
     let successCount = 0;
-  
+
     try {
       for (const file of filesToUpload) {
         const formData = new FormData();
         formData.append(formFieldName, file);
-  
+
         try {
-          const response = await fetch(`/api/${selectedOption}`, {
+          const targetUrl = selectedOption === "tgchannel"
+            ? `/api/enableauthapi/${selectedOption}`
+            : `/api/${selectedOption}`;
+
+          const response = await fetch(targetUrl, {
             method: 'POST',
             body: formData,
             headers: headers
           });
-  
+
           if (response.ok) {
             const result = await response.json();
             file.url = result.url;
-  
+
             // 更新 uploadedImages 和 selectedFiles
             setUploadedImages((prevImages) => [...prevImages, file]);
             setSelectedFiles((prevFiles) => prevFiles.filter(f => f !== file));
             successCount++;
+          } else if (response.status === 401) {
+            toast.error(' 未授权,请登录 !');
           } else {
             toast.error(`上传 ${file.name} 图片时出错`);
           }
@@ -146,10 +197,10 @@ export default function Home() {
           toast.error(`上传 ${file.name} 图片时出错`);
         }
       }
-  
+
       setUploadedFilesNum(uploadedFilesNum + successCount);
       toast.success(`已成功上传 ${successCount} 张图片`);
-  
+
     } catch (error) {
       console.error('上传过程中出现错误:', error);
       toast.error('上传错误');
@@ -157,9 +208,37 @@ export default function Home() {
       setUploading(false);
     }
   };
-      
 
-  
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/' });
+  };
+
+  const renderButton = () => {
+    if (!isAuthapi) {
+      return (
+        <Link href="/login">
+          <LoginButton>登录</LoginButton>
+        </Link>
+      );
+    }
+    switch (Loginuser) {
+      case 'user':
+        return <LoginButton onClick={handleSignOut}>登出</LoginButton>;
+      case 'admin':
+        return (
+          <Link href="/admin">
+            <LoginButton>管理</LoginButton>
+          </Link>
+        );
+      default:
+        return (
+          <Link href="/login">
+            <LoginButton>登录</LoginButton>
+          </Link>
+        );
+    }
+  };
 
 
 
@@ -330,8 +409,8 @@ export default function Home() {
     <main className=" overflow-auto h-full flex w-full min-h-screen flex-col items-center justify-between">
       <header className="fixed top-0 h-[50px] left-0 w-full border-b bg-white flex z-50 justify-center items-center">
         <nav className="flex justify-between items-center w-full max-w-4xl px-4">图床</nav>
-
-        <Link href="/admin"><button className="px-4 py-2 mx-2 w-28  sm:w-28 md:w-20 lg:w-16 xl:w-16  2xl:w-20 bg-blue-500 text-white rounded ">管理</button></Link>
+        {renderButton()}
+        {/* <Link href="/admin"><button className="px-4 py-2 mx-2 w-28  sm:w-28 md:w-20 lg:w-16 xl:w-16  2xl:w-20 bg-blue-500 text-white rounded ">管理</button></Link> */}
       </header>
       <div className="mt-[60px] w-9/10 sm:w-9/10 md:w-9/10 lg:w-9/10 xl:w-3/5 2xl:w-2/3">
         <div className="flex flex-row">
