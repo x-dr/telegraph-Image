@@ -3,18 +3,15 @@ import Switcher from '@/components/SwitchButton';
 import { ToastContainer, toast } from "react-toastify";
 import React, { useRef } from 'react';
 import TooltipItem from '@/components/Tooltip';
-import ImageModal from  "@/components/Imagebox"
-
+import ImageModal from "@/components/ImageModal"
 
 
 export default function Table({ data: initialData = [] }) {
     const [data, setData] = useState(initialData); // 初始化状态
-    // const [selectedImage, setSelectedImage] = useState(null); 
-    // const [selectedUrl, setSelectedUrl] = useState(null); 
-    const [modalData, setModalData] = useState(null); 
+    const [modalData, setModalData] = useState(null);
     const modalRef = useRef(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-    const imageRefs = useRef([]);
+    const [fileType, setFileType] = useState("img");
 
 
 
@@ -23,10 +20,7 @@ export default function Table({ data: initialData = [] }) {
     }, [initialData]);
 
     const handleClickOutside = (e) => {
-        // console.log("11");
-        console.log(modalRef.current.contains(e.target));
         if (modalRef.current && !modalRef.current.contains(e.target)) {
-            // console.log("11");
             setModalData(null);
         }
     };
@@ -137,32 +131,20 @@ export default function Table({ data: initialData = [] }) {
     };
 
 
-
     function getLastSegment(url) {
         const lastSlashIndex = url.lastIndexOf('/');
         return url.substring(lastSlashIndex + 1);
     }
-    
     const renderFile = (fileUrl, index) => {
-        const origin = typeof window !== 'undefined' ? window.location.origin : '';
-        const ismyorigin = fileUrl.startsWith(origin);
+
         const _url = getLastSegment(fileUrl);
         const getFileExtension = (url) => {
             const parts = url.split('.');
             return parts.length > 1 ? parts.pop().toLowerCase() : '';
         };
         const fileExtension = getFileExtension(_url);
-        let resolvedFileExtension = fileExtension;
-        if (!fileExtension && ismyorigin) {
-            try {
-                const response = fetch(fileUrl, { method: 'HEAD' });
-                const mimeType = response.headers.get('Content-Type') || '';
-                resolvedFileExtension = getFileExtensionFromMimeType(mimeType);
-            } catch (error) {
-                console.error('Error fetching file:', error);
-                resolvedFileExtension = "!";
-            }
-        }
+
+
 
         const imageExtensions = [
             'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif', 'webp',
@@ -173,7 +155,9 @@ export default function Table({ data: initialData = [] }) {
             'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm', 'ogg',
             'ogv', 'm4v', '3gp', '3g2', 'mpg', 'mpeg', 'mxf', 'vob'
         ];
-        if (imageExtensions.includes(resolvedFileExtension)) {
+
+        if (imageExtensions.includes(fileExtension)) {
+            
             return (
                 <img
                     key={`image-${index}`}
@@ -184,7 +168,7 @@ export default function Table({ data: initialData = [] }) {
                 />
             );
         }
-        else if (videoExtensions.includes(resolvedFileExtension)) {
+        else if (videoExtensions.includes(fileExtension)) {
             return (
                 <video
                     key={`video-${index}`}
@@ -211,6 +195,7 @@ export default function Table({ data: initialData = [] }) {
             );
         }
     };
+
 
 
 

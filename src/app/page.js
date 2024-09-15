@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useCallback } from "react";
+import { signOut } from "next-auth/react"
 import Image from "next/image";
 import { faImages, faTrashAlt, faUpload, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,7 +9,6 @@ import { toast } from "react-toastify";
 import { useEffect } from 'react';
 import Footer from '@/components/Footer'
 import Link from "next/link";
-import { signOut } from "next-auth/react"
 
 
 const LoginButton = ({ onClick, href, children }) => (
@@ -20,19 +20,20 @@ const LoginButton = ({ onClick, href, children }) => (
   </button>
 );
 
+
 export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedFilesNum, setUploadedFilesNum] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null); // 添加状态用于跟踪选中的放大图片
+  const [selectedImage, setSelectedImage] = useState(null); 
   const [activeTab, setActiveTab] = useState('preview');
   const [uploading, setUploading] = useState(false);
-  const [uploadStatusNum, setUploadStatusNum] = useState(0);
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
   const [selectedOption, setSelectedOption] = useState('tgchannel'); // 初始选择第一个选项
-  const [isAuthapi, setisAuthapi] = useState(false);
+  const [isAuthapi, setisAuthapi] = useState(false); 
   const [Loginuser, setLoginuser] = useState('');
+  const [boxType, setBoxtype] = useState("img");
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
@@ -56,8 +57,25 @@ export default function Home() {
 
 
   }, []);
+  const ip = async () => {
+    try {
+
+      const res = await fetch(`/api/ip`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json'
+        }
+
+      });
+      const data = await res.json();
+      setIP(data.ip);
 
 
+
+    } catch (error) {
+      console.error('请求出错:', error);
+    }
+  };
   const isAuth = async () => {
     try {
 
@@ -78,27 +96,6 @@ export default function Home() {
         setisAuthapi(false)
         setSelectedOption("58img")
       }
-
-
-
-    } catch (error) {
-      console.error('请求出错:', error);
-    }
-  };
-
-
-  const ip = async () => {
-    try {
-
-      const res = await fetch(`/api/ip`, {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json'
-        }
-
-      });
-      const data = await res.json();
-      setIP(data.ip);
 
 
 
@@ -131,7 +128,6 @@ export default function Home() {
     const newFiles = event.target.files;
     const filteredFiles = Array.from(newFiles).filter(file =>
       !selectedFiles.find(selFile => selFile.name === file.name));
-    // 过滤掉已经在 uploadedImages 数组中存在的文件
     const uniqueFiles = filteredFiles.filter(file =>
       !uploadedImages.find(upImg => upImg.name === file.name)
     );
@@ -141,7 +137,7 @@ export default function Home() {
 
   const handleClear = () => {
     setSelectedFiles([]);
-    // setUploadStatus('');
+    setUploadStatus('');
     // setUploadedImages([]);
   };
 
@@ -149,6 +145,8 @@ export default function Home() {
     const totalSizeInBytes = Array.from(files).reduce((acc, file) => acc + file.size, 0);
     return (totalSizeInBytes / (1024 * 1024)).toFixed(2); // 转换为MB并保留两位小数
   };
+
+
 
   const handleUpload = async (file = null) => {
     setUploading(true);
@@ -167,6 +165,7 @@ export default function Home() {
     try {
       for (const file of filesToUpload) {
         const formData = new FormData();
+
         formData.append(formFieldName, file);
 
         try {
@@ -182,6 +181,8 @@ export default function Home() {
 
           if (response.ok) {
             const result = await response.json();
+            // console.log(result);
+
             file.url = result.url;
 
             // 更新 uploadedImages 和 selectedFiles
@@ -210,35 +211,6 @@ export default function Home() {
   };
 
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
-  };
-
-  const renderButton = () => {
-    if (!isAuthapi) {
-      return (
-        <Link href="/login">
-          <LoginButton>登录</LoginButton>
-        </Link>
-      );
-    }
-    switch (Loginuser) {
-      case 'user':
-        return <LoginButton onClick={handleSignOut}>登出</LoginButton>;
-      case 'admin':
-        return (
-          <Link href="/admin">
-            <LoginButton>管理</LoginButton>
-          </Link>
-        );
-      default:
-        return (
-          <Link href="/login">
-            <LoginButton>登录</LoginButton>
-          </Link>
-        );
-    }
-  };
 
 
 
@@ -277,11 +249,18 @@ export default function Home() {
 
   // 处理点击图片放大
   const handleImageClick = (index) => {
-    // URL.createObjectURL(selectedFiles[index])
+
+    if (selectedFiles[index].type.startsWith('image/')) {
+      setBoxtype("img");
+    } else if (selectedFiles[index].type.startsWith('video/')) {
+      setBoxtype("video");
+    } else {
+      setBoxtype("other");
+    }
+
     setSelectedImage(URL.createObjectURL(selectedFiles[index]));
   };
 
-  // 处理关闭放大图片
   const handleCloseImage = () => {
     setSelectedImage(null);
   };
@@ -298,7 +277,6 @@ export default function Home() {
       toast.success(`链接复制成功`);
     } catch (err) {
       toast.error("链接复制失败")
-      // console.error('复制失败', err);
     }
   };
 
@@ -314,11 +292,54 @@ export default function Home() {
     }
   }
 
-  const handlerenderImageClick = (imageUrl) => {
-    // console.log(imageUrl);
+  const handlerenderImageClick = (imageUrl, type) => {
+    setBoxtype(type);
     setSelectedImage(imageUrl);
   };
 
+
+  const renderFile = (data, index) => {
+    const fileUrl = data.url;
+    if (data.type.startsWith('image/')) {
+      return (
+        <img
+          key={`image-${index}`}
+          src={data.url}
+          alt={`Uploaded ${index}`}
+          className="object-cover w-36 h-40 m-2"
+          onClick={() => handlerenderImageClick(fileUrl, "img")}
+        />
+      );
+
+    } else if (data.type.startsWith('video/')) {
+      return (
+        <video
+          key={`video-${index}`}
+          src={data.url}
+          className="object-cover w-36 h-40 m-2"
+          controls
+          onClick={() => handlerenderImageClick(fileUrl, "video")}
+        >
+          Your browser does not support the video tag.
+        </video>
+      );
+
+    } else {
+      // 其他文件类型
+      return (
+        <img
+          key={`image-${index}`}
+          src={data.url}
+          alt={`Uploaded ${index}`}
+          className="object-cover w-36 h-40 m-2"
+          onClick={() => handlerenderImageClick(fileUrl, "other")}
+        />
+      );
+    }
+
+
+
+  };
 
 
   const renderTabContent = () => {
@@ -328,13 +349,7 @@ export default function Home() {
           <div className=" flex flex-col ">
             {uploadedImages.map((data, index) => (
               <div key={index} className="m-2 rounded-2xl ring-offset-2 ring-2  ring-slate-100 flex flex-row ">
-                <img
-                  key={`image-${index}`}
-                  src={data.url}
-                  alt={`Uploaded ${index}`}
-                  className="object-cover w-36 h-40 m-2"
-                  onClick={() => handlerenderImageClick(data.url)}
-                />
+                {renderFile(data, index)}
                 <div className="flex flex-col justify-center w-4/5">
                   {[
                     { text: data.url, onClick: () => handleCopy(data.url) },
@@ -405,12 +420,43 @@ export default function Home() {
     setSelectedOption(e.target.value); // 更新选择框的值
   };
 
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/' });
+  };
+
+  const renderButton = () => {
+    if (!isAuthapi) {
+      return (
+        <Link href="/login">
+          <LoginButton>登录</LoginButton>
+        </Link>
+      );
+    }
+    switch (Loginuser) {
+      case 'user':
+        return <LoginButton onClick={handleSignOut}>登出</LoginButton>;
+      case 'admin':
+        return (
+          <Link href="/admin">
+            <LoginButton>管理</LoginButton>
+          </Link>
+        );
+      default:
+        return (
+          <Link href="/login">
+            <LoginButton>登录</LoginButton>
+          </Link>
+        );
+    }
+  };
+
+
   return (
     <main className=" overflow-auto h-full flex w-full min-h-screen flex-col items-center justify-between">
       <header className="fixed top-0 h-[50px] left-0 w-full border-b bg-white flex z-50 justify-center items-center">
         <nav className="flex justify-between items-center w-full max-w-4xl px-4">图床</nav>
         {renderButton()}
-        {/* <Link href="/admin"><button className="px-4 py-2 mx-2 w-28  sm:w-28 md:w-20 lg:w-16 xl:w-16  2xl:w-20 bg-blue-500 text-white rounded ">管理</button></Link> */}
       </header>
       <div className="mt-[60px] w-9/10 sm:w-9/10 md:w-9/10 lg:w-9/10 xl:w-3/5 2xl:w-2/3">
         <div className="flex flex-row">
@@ -426,13 +472,12 @@ export default function Home() {
               value={selectedOption} // 将选择框的值绑定到状态中的 selectedOption
               onChange={handleSelectChange} // 当选择框的值发生变化时触发 handleSelectChange 函数
               className="text-lg p-2 border  rounded text-center w-auto sm:w-auto md:w-auto lg:w-auto xl:w-auto  2xl:w-36">
-              <option value="tg">TG （会失效）</option>
+              <option value="tg" >TG(会失效)</option>
               <option value="tgchannel">TG_Channel</option>
               <option value="vviptuangou">vviptuangou</option>
-
               <option value="58img">58img</option>
-
               <option value="tencent">tencent</option>
+
             </select>
           </div>
 
@@ -450,12 +495,25 @@ export default function Home() {
             {selectedFiles.map((file, index) => (
               <div key={index} className="relative rounded-2xl w-44 h-48 ring-offset-2 ring-2  mx-3 my-3 flex flex-col items-center">
                 <div className="relative w-36 h-36 " onClick={() => handleImageClick(index)}>
-                  <Image
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${file.name}`}
-                    fill={true}
-
-                  />
+                  {file.type.startsWith('image/') && (
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${file.name}`}
+                      fill={true}
+                    />
+                  )}
+                  {file.type.startsWith('video/') && (
+                    <video
+                      src={URL.createObjectURL(file)}
+                      controls
+                      className="w-full h-full"
+                    />
+                  )}
+                  {!file.type.startsWith('image/') && !file.type.startsWith('video/') && (
+                    <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-700">
+                      <p>{file.name}</p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-row items-center  justify-center w-full mt-3">
                   <button
@@ -472,6 +530,7 @@ export default function Home() {
                   </button>
                   <button
                     className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer mx-2"
+
                     onClick={() => handleUpload(file)}
                   >
                     <FontAwesomeIcon icon={faUpload} />
@@ -510,7 +569,7 @@ export default function Home() {
           </div>
           <div className="md:col-span-5 col-span-8">
             <div className="w-full h-10 bg-slate-200 leading-10 px-4 text-center md:text-left">
-              已选择 {selectedFiles.length} 张，共 {getTotalSizeInMB(selectedFiles)} M;
+              已选择 {selectedFiles.length} 张，共 {getTotalSizeInMB(selectedFiles)} M
             </div>
           </div>
           <div className="md:col-span-1 col-span-3">
@@ -525,8 +584,6 @@ export default function Home() {
           <div className="md:col-span-1 col-span-5">
             <div
               className={`w-full bg-green-500 cursor-pointer h-10 flex items-center justify-center text-white ${uploading ? 'pointer-events-none opacity-50' : ''}`}
-              // className={`bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer mx-2 ${uploading ? 'pointer-events-none opacity-50' : ''}`}
-
               onClick={() => handleUpload()}
             >
               <FontAwesomeIcon icon={faUpload} style={{ width: '20px', height: '20px' }} className="mr-2" />
@@ -577,22 +634,43 @@ export default function Home() {
       </div>
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleCloseImage}>
-          <div className="relative">
+          <div className="relative flex flex-col items-center justify-between">
             <button
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
               onClick={handleCloseImage}
             >
               &times;
             </button>
-            <img
-              src={selectedImage}
-              alt="Selected"
-              width={500}
-              height={500}
-            // objectFit="contain"
-            />
+           
+              {boxType === "img" ? (
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  width={500}
+                  height={500}
+                  className="object-cover w-9/10  h-auto rounded-lg"
+                />
+              ) : boxType === "video" ? (
+                <video
+                  src={selectedImage}
+                  width={500}
+                  height={500}
+                  className="object-cover w-9/10  h-auto rounded-lg"
+                  controls
+                />
+              ) : boxType === "other" ? (
+                // 这里可以渲染你想要的其他内容或组件
+                <div className="p-4 bg-white text-black rounded">
+                  <p>Unsupported file type</p>
+                </div>
+              ) : (
+                // 你可以选择一个默认的内容或者返回 null
+                <div>未知类型</div>
+              )}
+            </div>
+
           </div>
-        </div>
+
       )}
 
       <div className="fixed inset-x-0 bottom-0 h-[50px] bg-slate-200  w-full  flex  z-50 justify-center items-center ">
