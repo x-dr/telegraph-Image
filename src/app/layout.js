@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-toastify/ReactToastify.min.css';
+import 'react-photo-view/dist/react-photo-view.css';
 import { GoogleAnalytics } from '@next/third-parties/google'
 
 

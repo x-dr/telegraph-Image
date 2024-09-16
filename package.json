@@ -21,6 +21,7 @@
     "next-auth": "^5.0.0-beta.19",
     "react": "^18",
     "react-dom": "^18",
+    "react-photo-view": "^1.2.6",
     "react-toastify": "^10.0.5",
     "wrangler": "^3.65.0"
   },
