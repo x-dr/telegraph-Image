@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useEffect } from 'react';
 import Footer from '@/components/Footer'
 import Link from "next/link";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 
 const LoginButton = ({ onClick, href, children }) => (
@@ -25,13 +26,13 @@ export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedFilesNum, setUploadedFilesNum] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null); 
+  const [selectedImage, setSelectedImage] = useState(null);
   const [activeTab, setActiveTab] = useState('preview');
   const [uploading, setUploading] = useState(false);
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
   const [selectedOption, setSelectedOption] = useState('tgchannel'); // 初始选择第一个选项
-  const [isAuthapi, setisAuthapi] = useState(false); 
+  const [isAuthapi, setisAuthapi] = useState(false);
   const [Loginuser, setLoginuser] = useState('');
   const [boxType, setBoxtype] = useState("img");
 
@@ -491,7 +492,7 @@ export default function Home() {
           style={{ minHeight: calculateMinHeight() }} // 动态设置最小高度
         >
           <div className="flex flex-wrap gap-3 min-h-[240px]">
-
+            <LoadingOverlay loading={uploading} />
             {selectedFiles.map((file, index) => (
               <div key={index} className="relative rounded-2xl w-44 h-48 ring-offset-2 ring-2  mx-3 my-3 flex flex-col items-center">
                 <div className="relative w-36 h-36 " onClick={() => handleImageClick(index)}>
@@ -641,35 +642,35 @@ export default function Home() {
             >
               &times;
             </button>
-           
-              {boxType === "img" ? (
-                <img
-                  src={selectedImage}
-                  alt="Selected"
-                  width={500}
-                  height={500}
-                  className="object-cover w-9/10  h-auto rounded-lg"
-                />
-              ) : boxType === "video" ? (
-                <video
-                  src={selectedImage}
-                  width={500}
-                  height={500}
-                  className="object-cover w-9/10  h-auto rounded-lg"
-                  controls
-                />
-              ) : boxType === "other" ? (
-                // 这里可以渲染你想要的其他内容或组件
-                <div className="p-4 bg-white text-black rounded">
-                  <p>Unsupported file type</p>
-                </div>
-              ) : (
-                // 你可以选择一个默认的内容或者返回 null
-                <div>未知类型</div>
-              )}
-            </div>
 
+            {boxType === "img" ? (
+              <img
+                src={selectedImage}
+                alt="Selected"
+                width={500}
+                height={500}
+                className="object-cover w-9/10  h-auto rounded-lg"
+              />
+            ) : boxType === "video" ? (
+              <video
+                src={selectedImage}
+                width={500}
+                height={500}
+                className="object-cover w-9/10  h-auto rounded-lg"
+                controls
+              />
+            ) : boxType === "other" ? (
+              // 这里可以渲染你想要的其他内容或组件
+              <div className="p-4 bg-white text-black rounded">
+                <p>Unsupported file type</p>
+              </div>
+            ) : (
+              // 你可以选择一个默认的内容或者返回 null
+              <div>未知类型</div>
+            )}
           </div>
+
+        </div>
 
       )}
 
