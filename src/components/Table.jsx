@@ -16,7 +16,6 @@ export default function Table({ data: initialData = [] }) {
 
     useEffect(() => {
         setData(initialData); // 更新数据
-        console.log("Updated Data:", data);
     }, [initialData]);
 
     const handleClickOutside = (e) => {
@@ -231,10 +230,6 @@ export default function Table({ data: initialData = [] }) {
                                     className="w-20 h-20 sticky left-0 z-10   py-2 px-4 border-b border-gray-500 bg-white text-sm text-gray-700"
                                 >
 
-                                    {
-                                        console.log(getImgUrl(item.url), index)
-
-                                    }
                                     {
                                         isVideo(getImgUrl(item.url)) ? (
 
