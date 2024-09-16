@@ -30,7 +30,7 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
-  const [selectedOption, setSelectedOption] = useState('tgchannel'); // 初始选择第一个选项
+  const [selectedOption, setSelectedOption] = useState('58img'); // 初始选择第一个选项
   const [isAuthapi, setisAuthapi] = useState(false); 
   const [Loginuser, setLoginuser] = useState('');
   const [boxType, setBoxtype] = useState("img");
