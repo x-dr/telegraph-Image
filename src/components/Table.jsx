@@ -1,25 +1,26 @@
 import { useState, useEffect } from "react";
 import Switcher from '@/components/SwitchButton';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import React, { useRef } from 'react';
 import TooltipItem from '@/components/Tooltip';
-import ImageModal from "@/components/ImageModal"
-
+import FullScreenIcon from "@/components/FullScreenIcon"
+import { PhotoProvider, PhotoView } from 'react-photo-view';
 
 export default function Table({ data: initialData = [] }) {
+
     const [data, setData] = useState(initialData); // 初始化状态
     const [modalData, setModalData] = useState(null);
     const modalRef = useRef(null);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-    const [fileType, setFileType] = useState("img");
 
 
 
     useEffect(() => {
         setData(initialData); // 更新数据
+        console.log("Updated Data:", data);
     }, [initialData]);
 
     const handleClickOutside = (e) => {
+        console.log(modalRef.current.contains(e.target));
         if (modalRef.current && !modalRef.current.contains(e.target)) {
             setModalData(null);
         }
@@ -29,53 +30,6 @@ export default function Table({ data: initialData = [] }) {
 
 
 
-    // 图片点击事件
-    const handleImageClick = (fileUrl, index) => {
-        // console.log(index);
-
-        setSelectedImageIndex(index);
-    };
-
-    // 关闭图片
-    const handleCloseImage = (e) => {
-        if (e.target.className.includes('modal-overlay')) {
-            setSelectedImageIndex(null);
-        }
-    };
-
-
-    // 切换到前一张图片
-    const handlePrevImage = () => {
-        setSelectedImageIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : data.length - 1));
-    };
-
-    // 切换到下一张图片
-    const handleNextImage = () => {
-        setSelectedImageIndex((prevIndex) => (prevIndex < data.length - 1 ? prevIndex + 1 : 0));
-    };
-
-    // 键盘左右切换图片
-    const handleKeyDown = (e) => {
-        if (e.key === 'ArrowLeft') {
-            handlePrevImage();
-        } else if (e.key === 'ArrowRight') {
-            handleNextImage();
-        }
-    };
-
-
-    // 键盘事件监听器
-    useEffect(() => {
-        if (selectedImageIndex !== null) {
-            window.addEventListener('keydown', handleKeyDown);
-        } else {
-            window.removeEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [selectedImageIndex]);
 
     const getImgUrl = (url) => {
         return url.startsWith("/file/") || url.startsWith("/cfile/") ? `${origin}/api${url}` : url;
@@ -136,7 +90,6 @@ export default function Table({ data: initialData = [] }) {
         return url.substring(lastSlashIndex + 1);
     }
     const renderFile = (fileUrl, index) => {
-
         const _url = getLastSegment(fileUrl);
         const getFileExtension = (url) => {
             const parts = url.split('.');
@@ -157,14 +110,13 @@ export default function Table({ data: initialData = [] }) {
         ];
 
         if (imageExtensions.includes(fileExtension)) {
-            
+
             return (
                 <img
                     key={`image-${index}`}
                     src={fileUrl}
                     alt={`Uploaded ${index}`}
                     className="w-full h-full object-cover"
-                    onClick={() => handleImageClick(fileUrl, index)}
                 />
             );
         }
@@ -175,7 +127,6 @@ export default function Table({ data: initialData = [] }) {
                     src={fileUrl}
                     className="w-full h-full object-cover"
                     controls
-                    onClick={() => handleImageClick(fileUrl, index)}
                 >
                     Your browser does not support the video tag.
                 </video>
@@ -183,23 +134,36 @@ export default function Table({ data: initialData = [] }) {
         }
         else {
             return (
-                <a
-                    key={`file-${index}`}
-                    href={fileUrl}
-                    className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <span>Unsupported file type</span>
-                </a>
+                <img
+                    key={`image-${index}`}
+                    src={fileUrl}
+                    alt={`Uploaded ${index}`}
+                    className="w-full h-full object-cover"
+                />
             );
         }
     };
 
+    function toggleFullScreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            const element = document.querySelector('.PhotoView-Portal');
+            if (element) {
+                element.requestFullscreen();
+            }
+        }
+    }
 
+    // const isImage = (url) => {
+    //     return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
+    // };
 
+    const isVideo = (url) => {
+        return /\.(mp4|mkv|avi|mov|wmv|flv|webm|ogg|ogv|m4v|3gp|3g2|mpg|mpeg|mxf|vob)$/i.test(url);
+    }
 
-
+    const elementSize = 400;
     return (
         <div className="mx-2">
             <table className="min-w-full bg-white  items-center justify-between ">
@@ -216,53 +180,125 @@ export default function Table({ data: initialData = [] }) {
                     </tr>
                 </thead>
                 <tbody >
-                    {data.map((item, index) => (
-                        <tr key={index}>
 
-                            <td onClick={() => handleNameClick(item)} className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 truncate max-w-48">
-                                {item.url}
-                            </td>
-                            <td
-                                className="w-20 h-20 sticky left-0 z-10   py-2 px-4 border-b border-gray-500 bg-white text-sm text-gray-700"
-                            >
-                                {renderFile(getImgUrl(item.url), index)}
-
-                            </td>
-                            <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48">
-                                {item.time}
-                            </td>
-                            <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48 break-all">
-                                <TooltipItem tooltipsText={item.referer} position="bottom" >{item.referer}</TooltipItem>
-                            </td>
-                            <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48 ">
-                                <TooltipItem tooltipsText={item.ip} position="bottom" >{item.ip}</TooltipItem>
-                            </td>
-                            <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.total}</td>
-                            <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.rating}</td>
-                            <td className="sticky  right-0 z-10 bg-white text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700">
-                                <div className="flex flex-row justify-center">
-                                    <Switcher initialChecked={item.rating} initName={item.url} />
-                                    <button
-                                        onClick={() => {
-                                            handleDelete(item.url)
-                                        }}
-                                        className="ml-2 px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                    <PhotoProvider
+                        maskOpacity={0.5}
+                        toolbarRender={({ rotate, onRotate, onScale, scale }) => {
+                            return (
+                                <>
+                                    <svg
+                                        className="PhotoView-Slider__toolbarIcon"
+                                        width="44"
+                                        height="44"
+                                        viewBox="0 0 768 768"
+                                        fill="white"
+                                        onClick={() => onScale(scale + 0.5)}
                                     >
-                                        删除
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                                        <path d="M384 640.5q105 0 180.75-75.75t75.75-180.75-75.75-180.75-180.75-75.75-180.75 75.75-75.75 180.75 75.75 180.75 180.75 75.75zM384 64.5q132 0 225.75 93.75t93.75 225.75-93.75 225.75-225.75 93.75-225.75-93.75-93.75-225.75 93.75-225.75 225.75-93.75zM415.5 223.5v129h129v63h-129v129h-63v-129h-129v-63h129v-129h63z" />
+                                    </svg>
+                                    <svg
+                                        className="PhotoView-Slider__toolbarIcon"
+                                        width="44"
+                                        height="44"
+                                        viewBox="0 0 768 768"
+                                        fill="white"
+                                        onClick={() => onScale(scale - 0.5)}
+                                    >
+                                        <path d="M384 640.5q105 0 180.75-75.75t75.75-180.75-75.75-180.75-180.75-75.75-180.75 75.75-75.75 180.75 75.75 180.75 180.75 75.75zM384 64.5q132 0 225.75 93.75t93.75 225.75-93.75 225.75-225.75 93.75-225.75-93.75-93.75-225.75 93.75-225.75 225.75-93.75zM223.5 352.5h321v63h-321v-63z" />
+                                    </svg>
+                                    <svg
+                                        className="PhotoView-Slider__toolbarIcon"
+                                        onClick={() => onRotate(rotate + 90)}
+                                        width="44"
+                                        height="44"
+                                        fill="white"
+                                        viewBox="0 0 768 768"
+                                    >
+                                        <path d="M565.5 202.5l75-75v225h-225l103.5-103.5c-34.5-34.5-82.5-57-135-57-106.5 0-192 85.5-192 192s85.5 192 192 192c84 0 156-52.5 181.5-127.5h66c-28.5 111-127.5 192-247.5 192-141 0-255-115.5-255-256.5s114-256.5 255-256.5c70.5 0 135 28.5 181.5 75z" />
+                                    </svg>
+                                    {document.fullscreenEnabled && <FullScreenIcon onClick={toggleFullScreen} />}
+                                </>
+                            );
+                        }}>
+                        {data.map((item, index) => (
+
+                            <tr key={index}>
+
+                                <td onClick={() => handleNameClick(item)} className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 truncate max-w-48">
+                                    {item.url}
+                                </td>
+                                <td
+                                    className="w-20 h-20 sticky left-0 z-10   py-2 px-4 border-b border-gray-500 bg-white text-sm text-gray-700"
+                                >
+
+                                    {
+                                        console.log(getImgUrl(item.url), index)
+
+                                    }
+                                    {
+                                        isVideo(getImgUrl(item.url)) ? (
+
+                                            <PhotoView key={item.url}
+                                                width={elementSize}
+                                                height={elementSize}
+                                                render={({ scale, attrs }) => {
+                                                    const width = attrs.style.width;
+                                                    const offset = (width - elementSize) / elementSize;
+                                                    const childScale = scale === 1 ? scale + offset : 1 + offset;
+                                                    return (
+                                                        <div {...attrs} className={`flex-none bg-white ${attrs.className || ''}`}>
+                                                            {renderFile(getImgUrl(item.url), index)}
+                                                        </div>
+                                                    )
+
+                                                }}
+                                            >
+                                                {renderFile(getImgUrl(item.url), index)}
+                                            </PhotoView>
+                                        ) : (
+                                            <PhotoView key={item.url}
+                                                src={getImgUrl(item.url)}
+                                            >
+                                                {renderFile(getImgUrl(item.url), index)}
+                                            </PhotoView>
+
+                                        )
+                                    }
+
+                                </td>
+                                <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48">
+                                    {item.time}
+                                </td>
+                                <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48 break-all">
+                                    <TooltipItem tooltipsText={item.referer} position="bottom" >{item.referer}</TooltipItem>
+                                </td>
+                                <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-48 ">
+                                    <TooltipItem tooltipsText={item.ip} position="bottom" >{item.ip}</TooltipItem>
+                                </td>
+                                <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.total}</td>
+                                <td className="text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700 max-w-2 ">{item.rating}</td>
+                                <td className="sticky  right-0 z-10 bg-white text-center py-2 px-4 border-b border-gray-200 text-sm text-gray-700">
+                                    <div className="flex flex-row justify-center">
+                                        <Switcher initialChecked={item.rating} initName={item.url} />
+                                        <button
+                                            onClick={() => {
+                                                handleDelete(item.url)
+                                            }}
+                                            className="ml-2 px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                                        >
+                                            删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        ))}
+
+                    </PhotoProvider>
                 </tbody>
             </table>
 
 
-            <ImageModal
-                selectedImageIndex={selectedImageIndex}
-                setSelectedImageIndex={setSelectedImageIndex}
-                data={data}
-            />
             {modalData && (
                 <div onClick={handleClickOutside} className="fixed z-50 inset-0 overflow-y-auto flex items-center justify-center m-5 ">
                     <div className="fixed inset-0 bg-black opacity-75"></div>
