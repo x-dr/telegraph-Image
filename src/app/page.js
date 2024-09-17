@@ -26,14 +26,14 @@ export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedFilesNum, setUploadedFilesNum] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null); // 添加状态用于跟踪选中的放大图片
   const [activeTab, setActiveTab] = useState('preview');
   const [uploading, setUploading] = useState(false);
   const [IP, setIP] = useState('');
   const [Total, setTotal] = useState('?');
   const [selectedOption, setSelectedOption] = useState('tgchannel'); // 初始选择第一个选项
-  const [isAuthapi, setisAuthapi] = useState(false);
-  const [Loginuser, setLoginuser] = useState('');
+  const [isAuthapi, setisAuthapi] = useState(false); // 初始选择第一个选项
+  const [Loginuser, setLoginuser] = useState(''); // 初始选择第一个选项
   const [boxType, setBoxtype] = useState("img");
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -129,6 +129,7 @@ export default function Home() {
     const newFiles = event.target.files;
     const filteredFiles = Array.from(newFiles).filter(file =>
       !selectedFiles.find(selFile => selFile.name === file.name));
+    // 过滤掉已经在 uploadedImages 数组中存在的文件
     const uniqueFiles = filteredFiles.filter(file =>
       !uploadedImages.find(upImg => upImg.name === file.name)
     );
@@ -170,10 +171,11 @@ export default function Home() {
         formData.append(formFieldName, file);
 
         try {
-          const targetUrl = selectedOption === "tgchannel"
+          const targetUrl = selectedOption === "tgchannel" || selectedOption === "r2"
             ? `/api/enableauthapi/${selectedOption}`
             : `/api/${selectedOption}`;
 
+          // const response = await fetch("https://img.131213.xyz/api/tencent", {
           const response = await fetch(targetUrl, {
             method: 'POST',
             body: formData,
@@ -190,10 +192,37 @@ export default function Home() {
             setUploadedImages((prevImages) => [...prevImages, file]);
             setSelectedFiles((prevFiles) => prevFiles.filter(f => f !== file));
             successCount++;
-          } else if (response.status === 401) {
-            toast.error(' 未授权,请登录 !');
           } else {
-            toast.error(`上传 ${file.name} 图片时出错`);
+            // 尝试从响应中提取错误信息
+            let errorMsg;
+            try {
+              const errorData = await response.json();
+              errorMsg = errorData.message || `上传 ${file.name} 图片时出错`;
+            } catch (jsonError) {
+              // 如果解析 JSON 失败，使用默认错误信息
+              errorMsg = `上传 ${file.name} 图片时发生未知错误`;
+            }
+
+            // 细化状态码处理
+            switch (response.status) {
+              case 400:
+                toast.error(`请求无效: ${errorMsg}`);
+                break;
+              case 403:
+                toast.error(`无权限访问资源: ${errorMsg}`);
+                break;
+              case 404:
+                toast.error(`资源未找到: ${errorMsg}`);
+                break;
+              case 500:
+                toast.error(`服务器错误: ${errorMsg}`);
+                break;
+              case 401:
+                toast.error(`未授权: ${errorMsg}`);
+                break;
+              default:
+                toast.error(`上传 ${file.name} 图片时出错: ${errorMsg}`);
+            }
           }
         } catch (error) {
           toast.error(`上传 ${file.name} 图片时出错`);
@@ -460,9 +489,11 @@ export default function Home() {
         {renderButton()}
       </header>
       <div className="mt-[60px] w-9/10 sm:w-9/10 md:w-9/10 lg:w-9/10 xl:w-3/5 2xl:w-2/3">
+
         <div className="flex flex-row">
           <div className="flex flex-col">
-            <div className="text-gray-800 text-lg">图片或视频上传</div>
+            <div className="text-gray-800 text-lg">图片或视频上传
+            </div>
             <div className="mb-4 text-sm text-gray-500">
               上传文件最大 5 MB;本站已托管 <span className="text-cyan-600">{Total}</span> 张图片; 你访问本站的IP是：<span className="text-cyan-600">{IP}</span>
             </div>
@@ -475,6 +506,7 @@ export default function Home() {
               className="text-lg p-2 border  rounded text-center w-auto sm:w-auto md:w-auto lg:w-auto xl:w-auto  2xl:w-36">
               <option value="tg" >TG(会失效)</option>
               <option value="tgchannel">TG_Channel</option>
+              <option value="r2">R2</option>
               <option value="vviptuangou">vviptuangou</option>
               <option value="58img">58img</option>
               <option value="tencent">tencent</option>
@@ -543,7 +575,9 @@ export default function Home() {
 
             {selectedFiles.length === 0 && (
               <div className="absolute -z-10 left-0 top-0 w-full h-full flex items-center justify-center">
+
                 <div className="text-gray-500">
+
                   拖拽文件到这里或将屏幕截图复制并粘贴到此处上传
                 </div>
               </div>
@@ -585,6 +619,8 @@ export default function Home() {
           <div className="md:col-span-1 col-span-5">
             <div
               className={`w-full bg-green-500 cursor-pointer h-10 flex items-center justify-center text-white ${uploading ? 'pointer-events-none opacity-50' : ''}`}
+              // className={`bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer mx-2 ${uploading ? 'pointer-events-none opacity-50' : ''}`}
+
               onClick={() => handleUpload()}
             >
               <FontAwesomeIcon icon={faUpload} style={{ width: '20px', height: '20px' }} className="mr-2" />
