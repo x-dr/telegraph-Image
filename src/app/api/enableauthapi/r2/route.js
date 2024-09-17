@@ -26,16 +26,7 @@ export async function POST(request) {
 
 	const req_url = new URL(request.url);
 
-	if (!env.IMGRS) {
-		return Response.json({
-			status: 500,
-			message: `IMGRS is not Set`,
-			success: false
-		}, {
-			status: 500,
-			headers: corsHeaders,
-		})
-	}
+
 
 	const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.socket.remoteAddress;
 	const clientIp = ip ? ip.split(',')[0].trim() : 'IP not found';
