@@ -16,7 +16,6 @@ export async function OPTIONS(request) {
 }
 
 
-
 //https://developers.cloudflare.com/r2/examples/demo-worker/
 export async function GET(request, { params }) {
   const { name } = params
@@ -46,7 +45,7 @@ export async function GET(request, { params }) {
 
   try {
     rating = await getRating(env.IMG, `/rfile/${name}`);
-    if (rating === 3) {
+    if (rating === 3 && !(Referer === `${req_url.origin}/admin` || Referer === `${req_url.origin}/list` || Referer === `${req_url.origin}/`)) {
       await logRequest(env, name, Referer, clientIp);
       return Response.redirect(`${req_url.origin}/img/blocked.png`, 302);
     }

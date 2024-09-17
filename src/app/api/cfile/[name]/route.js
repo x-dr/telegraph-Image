@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
   let { env, cf, ctx } = getRequestContext();
 
   let req_url = new URL(request.url);
-  
+
 	if (!env.TG_BOT_TOKEN || !env.TG_CHAT_ID) {
 		return Response.json({
 			status: 500,
@@ -43,7 +43,7 @@ export async function GET(request, { params }) {
 
   try {
     rating = await getRating(env.IMG, `/cfile/${name}`);
-    if (rating === 3) {
+    if (rating === 3 && !(Referer === `${req_url.origin}/admin` || Referer === `${req_url.origin}/list` || Referer === `${req_url.origin}/`)) {
       await logRequest(env, name, Referer, clientIp);
       return Response.redirect(`${req_url.origin}/img/blocked.png`, 302);
     }
