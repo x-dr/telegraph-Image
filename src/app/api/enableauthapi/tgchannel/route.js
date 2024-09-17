@@ -12,7 +12,17 @@ const corsHeaders = {
 
 export async function POST(request) {
 	const { env, cf, ctx } = getRequestContext();
-
+	
+	if (!env.TG_BOT_TOKEN || !env.TG_CHAT_ID) {
+		return Response.json({
+			status: 500,
+			message: `TG_BOT_TOKEN or TG_CHAT_ID is not Set`,
+			success: false
+		}, {
+			status: 500,
+			headers: corsHeaders,
+		})
+	}
 
 	const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.socket.remoteAddress;
 	const clientIp = ip ? ip.split(',')[0].trim() : 'IP not found';

@@ -8,17 +8,58 @@ const corsHeaders = {
   'Content-Type': 'application/json'
 };
 
+export async function OPTIONS(request) {
+  return new Response(null, {
+    headers: corsHeaders
+  });
+}
+
 export async function GET(request, { params }) {
   const { name } = params
   let { env, cf, ctx } = getRequestContext();
 
   let req_url = new URL(request.url);
-
+  
+	if (!env.TG_BOT_TOKEN || !env.TG_CHAT_ID) {
+		return Response.json({
+			status: 500,
+			message: `TG_BOT_TOKEN or TG_CHAT_ID is not Set`,
+			success: false
+		}, {
+			status: 500,
+			headers: corsHeaders,
+		})
+	}
 
 
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.socket.remoteAddress;
   const clientIp = ip ? ip.split(',')[0].trim() : 'IP not found';
   const Referer = request.headers.get('Referer') || "Referer";
+
+  const cacheKey = new Request(req_url.toString(), request);
+  const cache = caches.default;
+
+  let rating
+
+  try {
+    rating = await getRating(env.IMG, `/cfile/${name}`);
+    if (rating === 3) {
+      await logRequest(env, name, Referer, clientIp);
+      return Response.redirect(`${req_url.origin}/img/blocked.png`, 302);
+    }
+
+  } catch (error) {
+    console.log(error);
+
+  }
+  // 检查缓存
+  let cachedResponse = await cache.match(cacheKey);
+  if (cachedResponse) {
+    await logRequest(env, name, Referer, clientIp);
+    // 如果缓存中存在，直接返回缓存响应
+    return cachedResponse
+  }
+
 
   try {
     const file_path = await getFile_path(env, name);
@@ -48,46 +89,19 @@ export async function GET(request, { params }) {
           return new Response(fileBuffer, {
             headers: {
               "Content-Disposition": `attachment; filename=${fileName}`,
+              "Access-Control-Allow-Origin": "*"
             },
           });
         } else {
-          const nowTime = await get_nowTime()
-          await insertTgImgLog(env.IMG, `/cfile/${name}`, Referer, clientIp, nowTime);
-          const rating = await getRating(env.IMG, `/cfile/${name}`);
-
-          if (rating) {
-            try {
-              const setData = await env.IMG.prepare(`UPDATE imginfo SET total = total +1 WHERE url = '/cfile/${name}';`).run()
-            } catch (error) {
-              console.log(error);
-            }
-            if (rating.rating == 3) {
-              return Response.redirect(`${req_url.origin}/img/blocked.png`, 302);
-            } else {
-              return new Response(fileBuffer, {
-                headers: {
-                  "Content-Disposition": `attachment; filename=${fileName}`,
-                },
-              });
-            }
-          } else {
-            return Response.json({
-              status: 500,
-              message: ` ${error.message}`,
-              success: false
-            }
-              , {
-                status: 500,
-                headers: corsHeaders,
-              })
-          }
+          await logRequest(env, name, Referer, clientIp);
+          return new Response(fileBuffer, {
+            headers: {
+              "Content-Disposition": `attachment; filename=${fileName}`,
+              "Access-Control-Allow-Origin": "*"
+            },
+          });
 
         }
-
-
-
-
-
       } else {
         return Response.json({
           status: 500,
@@ -152,50 +166,18 @@ async function insertTgImgLog(DB, url, referer, ip, time) {
     .bind(url, referer, ip, time)
     .run();
 }
-// 插入 imginfo 记录
-async function insertImgInfo(DB, url, referer, ip, rating, time) {
-  try {
-    const instdata = await DB.prepare(
-      `INSERT INTO imginfo (url, referer, ip, rating, total, time)
-           VALUES ('${url}', '${referer}', '${ip}', ${rating}, 1, '${time}')`
-    ).run()
-  } catch (error) {
-
-  };
 
 
-}
 
 // 从数据库获取鉴黄信息
 async function getRating(DB, url) {
   const ps = DB.prepare(`SELECT rating FROM imginfo WHERE url='${url}'`);
   const result = await ps.first();
-  return result;
+  return result ? result.rating : null;
 }
 
-// 调用 ModerateContent API 鉴黄
-async function getModerateContentRating(env, url) {
-  try {
-    const apikey = env.ModerateContentApiKey
-    const ModerateContentUrl = apikey ? `https://api.moderatecontent.com/moderate/?key=${apikey}&` : ""
-    const ratingApi = env.RATINGAPI ? `${env.RATINGAPI}?` : ModerateContentUrl;
-    console.log(`${ratingApi}url=https://telegra.ph${url}`);
-    if (ratingApi) {
-      const res = await fetch(`${ratingApi}url=https://telegra.ph${url}`);
-      const data = await res.json();
-      const rating_index = data.hasOwnProperty('rating_index') ? data.rating_index : -1;
-
-      return rating_index;
-    } else {
-      return 0
-    }
 
 
-  } catch (error) {
-    console.log("error");
-    return -1
-  }
-}
 
 
 async function get_nowTime() {
@@ -214,4 +196,16 @@ async function get_nowTime() {
 
   return formattedDate
 
+}
+
+
+// 异步日志记录
+async function logRequest(env, name, referer, ip) {
+  try {
+    const nowTime = await get_nowTime()
+    await insertTgImgLog(env.IMG, `/cfile/${name}`, referer, ip, nowTime);
+    const setData = await env.IMG.prepare(`UPDATE imginfo SET total = total +1 WHERE url = '/rfile/${name}';`).run()
+  } catch (error) {
+    console.error('Error logging request:', error);
+  }
 }
