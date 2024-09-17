@@ -31,7 +31,7 @@ export default function Table({ data: initialData = [] }) {
 
 
     const getImgUrl = (url) => {
-        return url.startsWith("/file/") || url.startsWith("/cfile/") ? `${origin}/api${url}` : url;
+        return url.startsWith("/file/") || url.startsWith("/cfile/") || url.startsWith("/rfile/") ? `${origin}/api${url}` : url;
     };
 
     const handleNameClick = (item) => {
