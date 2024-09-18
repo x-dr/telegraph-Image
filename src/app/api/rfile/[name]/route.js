@@ -1,6 +1,5 @@
 export const runtime = 'edge';
 import { getRequestContext } from '@cloudflare/next-on-pages';
-import { headers } from 'next/headers';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +13,7 @@ export async function OPTIONS(request) {
     headers: corsHeaders
   });
 }
+
 
 
 //https://developers.cloudflare.com/r2/examples/demo-worker/
@@ -49,6 +49,7 @@ export async function GET(request, { params }) {
       await logRequest(env, name, Referer, clientIp);
       return Response.redirect(`${req_url.origin}/img/blocked.png`, 302);
     }
+    
 
   } catch (error) {
     console.log(error);
@@ -57,7 +58,9 @@ export async function GET(request, { params }) {
   // 检查缓存
   let cachedResponse = await cache.match(cacheKey);
   if (cachedResponse) {
-    await logRequest(env, name, Referer, clientIp);
+    if (!(Referer === `${req_url.origin}/admin` || Referer === `${req_url.origin}/list` || Referer === `${req_url.origin}/`)) {
+      await logRequest(env, name, Referer, clientIp);
+    }
     // 如果缓存中存在，直接返回缓存响应
     return cachedResponse
   }
@@ -97,15 +100,20 @@ export async function GET(request, { params }) {
       headers,
       status
     })
+
     if (status === 200) {
-      await cache.put(cacheKey, response_img.clone());
+      ctx.waitUntil(cache.put(cacheKey, response_img.clone()));
+      // await cache.put(cacheKey, response_img.clone());
     }
 
 
 
 
-    if (Referer == req_url.origin + "/admin" || Referer == req_url.origin + "/list" || Referer == req_url.origin + "/" || !env.IMG) {
+    if (Referer === `${req_url.origin}/admin` || Referer === `${req_url.origin}/list` || Referer === `${req_url.origin}/`) {
       return response_img
+    }else if(!env.IMG){
+      return response_img
+
     } else {
       await logRequest(env, name, Referer, clientIp);
       return response_img

@@ -14,23 +14,25 @@ export async function OPTIONS(request) {
   });
 }
 
+// 判断Referer是否允许
+
+
 export async function GET(request, { params }) {
   const { name } = params
   let { env, cf, ctx } = getRequestContext();
 
   let req_url = new URL(request.url);
 
-	if (!env.TG_BOT_TOKEN || !env.TG_CHAT_ID) {
-		return Response.json({
-			status: 500,
-			message: `TG_BOT_TOKEN or TG_CHAT_ID is not Set`,
-			success: false
-		}, {
-			status: 500,
-			headers: corsHeaders,
-		})
-	}
-
+  if (!env.TG_BOT_TOKEN || !env.TG_CHAT_ID) {
+    return Response.json({
+      status: 500,
+      message: `TG_BOT_TOKEN or TG_CHAT_ID is not Set`,
+      success: false
+    }, {
+      status: 500,
+      headers: corsHeaders,
+    })
+  }
 
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.socket.remoteAddress;
   const clientIp = ip ? ip.split(',')[0].trim() : 'IP not found';
@@ -55,7 +57,9 @@ export async function GET(request, { params }) {
   // 检查缓存
   let cachedResponse = await cache.match(cacheKey);
   if (cachedResponse) {
-    await logRequest(env, name, Referer, clientIp);
+    if (!(Referer === `${req_url.origin}/admin` || Referer === `${req_url.origin}/list` || Referer === `${req_url.origin}/`)) {
+      await logRequest(env, name, Referer, clientIp);
+    }
     // 如果缓存中存在，直接返回缓存响应
     return cachedResponse
   }
@@ -85,21 +89,26 @@ export async function GET(request, { params }) {
 
       if (res.ok) {
         const fileBuffer = await res.arrayBuffer();
-        if (Referer == req_url.origin + "/admin" || Referer == req_url.origin + "/list" || Referer == req_url.origin + "/" || !env.IMG) {
-          return new Response(fileBuffer, {
-            headers: {
-              "Content-Disposition": `attachment; filename=${fileName}`,
-              "Access-Control-Allow-Origin": "*"
-            },
-          });
+
+
+        const response_img = new Response(fileBuffer, {
+          headers: {
+            "Content-Disposition": `attachment; filename=${fileName}`,
+            "Access-Control-Allow-Origin": "*"
+          },
+        });
+
+        ctx.waitUntil(cache.put(cacheKey, response_img.clone()));
+
+        if (Referer === `${req_url.origin}/admin` || Referer === `${req_url.origin}/list` || Referer === `${req_url.origin}/`) {
+          return response_img;
+
+        } else if (!env.IMG) {
+          return response_img
+
         } else {
           await logRequest(env, name, Referer, clientIp);
-          return new Response(fileBuffer, {
-            headers: {
-              "Content-Disposition": `attachment; filename=${fileName}`,
-              "Access-Control-Allow-Origin": "*"
-            },
-          });
+          return response_img
 
         }
       } else {
