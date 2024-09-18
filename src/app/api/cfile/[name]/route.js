@@ -8,6 +8,32 @@ const corsHeaders = {
   'Content-Type': 'application/json'
 };
 
+
+function getContentType(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  const mimeTypes = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'bmp': 'image/bmp',
+    'webp': 'image/webp',
+    'svg': 'image/svg+xml',
+    'pdf': 'application/pdf',
+    'txt': 'text/plain',
+    'html': 'text/html',
+    'json': 'application/json',
+    'mp4': 'video/mp4',
+    'avi': 'video/x-msvideo',
+    'mov': 'video/quicktime',
+    'wmv': 'video/x-ms-wmv',
+    'flv': 'video/x-flv',
+    'mkv': 'video/x-matroska'
+  };
+  return mimeTypes[extension] || 'application/octet-stream';
+}
+
+
 export async function OPTIONS(request) {
   return new Response(null, {
     headers: corsHeaders
@@ -91,11 +117,15 @@ export async function GET(request, { params }) {
         const fileBuffer = await res.arrayBuffer();
 
 
+
+        const contentType = getContentType(fileName);
+        const responseHeaders = {
+          "Content-Disposition": `attachment; filename=${fileName}`,
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": contentType
+        };
         const response_img = new Response(fileBuffer, {
-          headers: {
-            "Content-Disposition": `attachment; filename=${fileName}`,
-            "Access-Control-Allow-Origin": "*"
-          },
+          headers: responseHeaders
         });
 
         ctx.waitUntil(cache.put(cacheKey, response_img.clone()));
