@@ -24,12 +24,23 @@ export async function POST(request) {
 		})
 	}
 
-	const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.socket.remoteAddress;
+	const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.socket?.remoteAddress;
 	const clientIp = ip ? ip.split(',')[0].trim() : 'IP not found';
 	const Referer = request.headers.get('Referer') || "Referer";
 
 	const formData = await request.formData();
-	const fileType = formData.get('file').type;
+	const fileField = formData.get('file');
+	if (!fileField) {
+		return Response.json({
+			status: 400,
+			message: `file field is missing`,
+			success: false
+		}, {
+			status: 400,
+			headers: corsHeaders,
+		})
+	}
+	const fileType = fileField.type;
 
 	const req_url = new URL(request.url);
 
@@ -66,6 +77,18 @@ export async function POST(request) {
 		let responseData = await res_img.json();
 		const fileData = await getFile(responseData);
 
+		if (!fileData) {
+			const tgError = responseData?.description || responseData?.error_code || 'Telegram API returned no file';
+			return Response.json({
+				status: 500,
+				message: `Telegram upload failed: ${tgError}`,
+				success: false
+			}, {
+				status: 500,
+				headers: corsHeaders,
+			})
+		}
+
 		const data = {
 			"url": `${req_url.origin}/api/cfile/${fileData.file_id}`,
 			"code": 200,
@@ -81,9 +104,10 @@ export async function POST(request) {
 				headers: corsHeaders,
 			})
 		} else {
+			let nowTime;
 			try {
 				const rating_index = await getRating(env, `${fileData.file_id}`);
-				const nowTime = await get_nowTime()
+				nowTime = await get_nowTime()
 				await insertImageData(env.IMG, `/cfile/${fileData.file_id}`, Referer, clientIp, rating_index, nowTime);
 
 				return Response.json({
@@ -103,7 +127,7 @@ export async function POST(request) {
 
 			} catch (error) {
 				console.log(error);
-				await insertImageData(env.IMG, `/cfile/${fileData.file_id}`, Referer, clientIp, -1, nowTime);
+				await insertImageData(env.IMG, `/cfile/${fileData.file_id}`, Referer, clientIp, -1, nowTime || 'unknown');
 
 
 				return Response.json({
